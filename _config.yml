@@ -75,7 +75,7 @@ ga_domain: huangxuan.me
 # Sidebar settings
 sidebar: true # whether or not using Sidebar.
 sidebar-about-description: "Yuzusoft大三忠实粉丝"
-sidebar-avatar: https://i1.hdslb.com/bfs/article/2282eb45e0c8f1a745ea6005fadae70eadc3d2b8.jpg # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: https://github.com/sorrymaker2111/sorrymaker2111.github.io/blob/master/42dbbbf175a6237ba68557a9789f0fea8735ebb6.jpg # use absolute URL, seeing it's used in both `/` and `/about/`
 
 # Featured Tags
 featured-tags: true # whether or not using Feature-Tags

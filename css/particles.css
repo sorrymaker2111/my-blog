@@ -1,0 +1,63 @@
+#particles-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;  /* 放在内容后面 */
+  pointer-events: none;  /* 允许鼠标事件穿透到下层元素 */
+  will-change: transform; /* 性能优化 */
+}
+
+/* 创建内容安全区域 - 避免在中央内容区域显示动画 */
+.content-safe-area {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 1000px;
+  height: 100vh;
+  z-index: -1;
+  background-color: rgba(255, 255, 255, 0.01); /* 几乎完全透明 */
+  pointer-events: none;
+}
+
+/* 右侧装饰图形 */
+.decoration-right {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  will-change: transform; /* 性能优化 */
+}
+
+/* 左侧装饰图形 */
+.decoration-left {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  will-change: transform; /* 性能优化 */
+}
+
+/* 避免在有文字的区域显示 */
+@media (max-width: 1200px) {
+  .decoration-right, .decoration-left {
+    width: 150px; /* 减小宽度 */
+  }
+}
+
+@media (max-width: 768px) {
+  .decoration-right, .decoration-left {
+    display: none; /* 在移动设备上隐藏装饰图形 */
+  }
+} 

@@ -11,9 +11,9 @@
     <div class="tags">
         {% capture tags %}
         {% comment %}
-            Only display specified tags: java, springboot, sorrymaker随想录, Web, galgame, 柚子社, 千恋万花
+            Only display specified tags: java, springboot, sorrymaker随想录, Web, galgame, 柚子社, 千恋万花, mygo
         {% endcomment %}
-        {% assign featured_tags = "java,springboot,sorrymaker随想录,Web,galgame,柚子社,千恋万花" | split: "," %}
+        {% assign featured_tags = "java,springboot,sorrymaker随想录,Web,galgame,柚子社,千恋万花,mygo" | split: "," %}
         {% for tag in site.tags %}
             {% if featured_tags contains tag[0] %}
                 <a data-sort="{{ site.posts.size | minus: tag[1].size | prepend: '0000' | slice: -4, 4 }}" 

@@ -4,7 +4,7 @@ title: "SpringBoot框架实战"
 subtitle: "快速构建企业级应用"
 date: 2023-01-02 12:00:00
 author: "sorrymaker"
-header-img: "img/post-bg-springboot.jpg"
+header-img: "img/post-bg-springboot.png"
 catalog: true
 tags:
   - springboot

@@ -8,7 +8,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: -2; /* 调整为-2，使其在内容背景矩形之下 */
   pointer-events: none;
 }
 
@@ -19,4 +19,51 @@
   left: 0;
   width: 100%;
   height: 100%;
-} 
+}
+
+/* 内容区域背景矩形样式 */
+#content-background {
+  position: fixed;
+  top: 0;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgba(230, 240, 250, 0.1);
+  box-shadow: -5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1);
+  border-left: 1px solid rgba(150, 180, 220, 0.1);
+  border-right: 1px solid rgba(150, 180, 220, 0.1);
+  backdrop-filter: blur(1px); /* 轻微模糊效果，增强层次感 */
+  /* 添加边框，使内容区域更明显 */
+  border: 1px solid rgba(150, 180, 220, 0.15);
+  /* 添加宽度的最小值，确保内容区域有足够宽度 */
+  min-width: 600px;
+  /* 添加媒体查询，在小屏幕上自适应 */
+}
+
+/* 侧边栏背景矩形样式 */
+#sidebar-background {
+  position: fixed;
+  top: 0;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgba(230, 240, 250, 0.1);
+  box-shadow: -5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1);
+  backdrop-filter: blur(1px);
+  border: 1px solid rgba(150, 180, 220, 0.15);
+  min-width: 280px;
+}
+
+/* 媒体查询，在小屏幕上调整内容背景宽度 */
+@media (max-width: 768px) {
+  #content-background {
+    min-width: 90%;
+    left: 5% !important; /* 覆盖JavaScript设置的left值 */
+    right: 5% !important;
+    width: 90% !important;
+  }
+  
+  #sidebar-background {
+    display: none; /* 在小屏幕上隐藏侧边栏背景 */
+  }
+}

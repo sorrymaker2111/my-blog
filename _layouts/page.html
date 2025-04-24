@@ -5,6 +5,9 @@ layout: default
 <!-- Page Header -->
 {% include intro-header.html type='page' %}
 
+<!-- 添加浮动侧边栏 -->
+{% include floating-sidebar.html %}
+
 <!-- Main Content -->
 <div class="container">
   <div class="row">
@@ -17,7 +20,7 @@ layout: default
     </div>
     <!-- Sidebar Container -->
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1
-      sidebar-container">
+      sidebar-container" style="display:none;">
       <!-- Featured Tags -->
       {% include featured-tags.html %}
 
@@ -32,9 +35,9 @@ layout: default
       col-xs-12 postlist-container">
       {{ content }}
     </div>
-    <!-- Sidebar Container -->
+    <!-- Sidebar Container - 隐藏原有侧边栏 -->
     <div class="col-lg-3 col-lg-offset-0 col-md-3 col-md-offset-0 col-sm-12
-      col-xs-12 sidebar-container">
+      col-xs-12 sidebar-container" style="display:none;">
       <!-- Featured Tags -->
       {% include featured-tags.html %}
 

@@ -1,0 +1,351 @@
+<!-- 浮动侧边栏，将内容放在主内容区右侧 -->
+<div id="floating-sidebar" class="floating-sidebar">
+  <!-- Featured Tags -->
+  <section>
+    <h5><a href="{{'/archive/' | prepend: site.baseurl }}">FEATURED TAGS</a></h5>
+    <div class="tags">
+      {% capture tags %}
+      {% comment %}
+          只显示指定标签: java, springboot, sorrymaker随想录, Web, galgame, 柚子社, 千恋万花
+      {% endcomment %}
+      {% assign featured_tags = "java,springboot,sorrymaker随想录,Web,galgame,柚子社,千恋万花" | split: "," %}
+      {% for tag in site.tags %}
+          {% if featured_tags contains tag[0] %}
+              <a data-sort="{{ site.posts.size | minus: tag[1].size | prepend: '0000' | slice: -4, 4 }}" 
+                  href="{{ site.baseurl }}/archive/?tag={{ tag[0] | url_encode }}"
+                  title="{{ tag[0] }}"
+                  rel="{{ tag[1].size }}"
+                  class="tag-link">{{ tag[0] }}</a>__SEPARATOR__
+          {% endif %}
+      {% endfor %}
+      {% endcapture %}
+      {{ tags | split:'__SEPARATOR__' | sort }}
+    </div>
+  </section>
+
+  <!-- Short About -->
+  <section class="visible-md visible-lg">
+    <hr class="compact-hr">
+    <h5><a href="{{'/about/' | prepend: site.baseurl }}">ABOUT ME</a></h5>
+    <div class="short-about">
+      {% if site.sidebar-avatar %}
+      <img src="{{site.sidebar-avatar}}" class="sidebar-avatar-img" />
+      {% endif %}
+      {% if site.sidebar-about-description %}
+      <p class="about-description">{{site.sidebar-about-description}}</p>
+      {% endif %}
+      <!-- SNS Link -->
+      <div class="sns-container">
+        {% include sns-links.html %}
+      </div>
+    </div>
+  </section>
+
+  <!-- 推荐链接 -->
+  {% if site.friends %}
+  <hr class="compact-hr">
+  <h5>推荐链接</h5>
+  <ul class="list-inline friend-links">
+    {% for friend in site.friends %}
+    <li><a href="{{friend.href}}">{{friend.title}}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+<!-- 添加浮动侧边栏样式 -->
+<style>
+  .floating-sidebar {
+    position: fixed;
+    top: 100px; /* 距离顶部的距离 */
+    right: 30px; /* 屏幕右侧的距离 */
+    width: 260px;
+    padding: 12px;
+    z-index: 100;
+    color: #666;
+    font-size: 0.9em;
+    transition: top 0.3s ease, transform 0.3s ease; /* 添加更多的过渡效果 */
+    will-change: transform, top; /* 提示浏览器优化动画效果 */
+  }
+
+  .floating-sidebar section {
+    margin-bottom: 15px;
+  }
+
+  .floating-sidebar h5 {
+    text-align: center;
+    margin: 8px 0;
+    font-size: 1em;
+  }
+
+  .floating-sidebar .tags a, 
+  .floating-sidebar .tags a.tag-link {
+    margin: 3px 2px;
+    display: inline-block;
+    font-size: 0.9em;
+    color: #000 !important; /* 强制标签文字颜色为黑色 */
+    font-weight: 500; /* 稍微加粗 */
+    border: 1px solid #666; /* 加深边框颜色 */
+    border-radius: 15px; /* 更大的圆角，呈现为圆角矩形 */
+    padding: 2px 10px; /* 增加内边距使标签更大 */
+    background-color: rgba(255, 255, 255, 0.7); /* 半透明背景 */
+    text-decoration: none; /* 移除下划线 */
+    transition: all 0.2s ease; /* 添加过渡效果 */
+  }
+
+  .floating-sidebar .tags a:hover, 
+  .floating-sidebar .tags a.tag-link:hover {
+    background-color: rgba(230, 240, 250, 0.9); /* 悬停时背景色 */
+    border-color: #333; /* 悬停时边框颜色更深 */
+    transform: translateY(-1px); /* 轻微上浮效果 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+  }
+
+  /* 缩小侧边栏头像图片尺寸 */
+  .floating-sidebar .sidebar-avatar-img {
+    max-width: 80px;
+    height: auto;
+    display: block;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+  }
+  
+  /* 描述文字样式 */
+  .floating-sidebar .about-description {
+    font-size: 0.9em;
+    margin: 5px 0;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  /* 自定义SNS链接容器 */
+  .floating-sidebar .sns-container {
+    text-align: center;
+    margin-top: 5px;
+  }
+
+  /* SNS图标样式调整 */
+  .floating-sidebar .sns-container .list-inline {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .floating-sidebar .sns-container .list-inline > li {
+    margin: 0 2px 3px;
+    padding: 0;
+    display: inline-block;
+  }
+
+  .floating-sidebar .sns-container .list-inline > li > a {
+    display: inline-block;
+    font-size: 0.8em;
+  }
+  
+  /* 推荐链接样式 */
+  .floating-sidebar .friend-links {
+    margin: 5px 0;
+    padding: 0;
+    text-align: center;
+  }
+  
+  .floating-sidebar .friend-links li {
+    margin: 0 3px 3px;
+    padding: 0;
+    display: inline-block;
+    font-size: 0.9em;
+  }
+  
+  /* 分隔线样式 */
+  .floating-sidebar .compact-hr {
+    margin: 10px 0;
+    border-top: 1px solid rgba(150, 180, 220, 0.2);
+  }
+
+  /* 在小屏幕上隐藏浮动侧边栏 */
+  @media (max-width: 1200px) {
+    .floating-sidebar {
+      display: none;
+    }
+  }
+</style>
+
+<!-- 添加JavaScript以动态定位侧边栏 -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 获取内容区背景位置
+    function updateFloatingSidebarPosition() {
+      const contentBg = document.getElementById('sidebar-background');
+      const floatingSidebar = document.getElementById('floating-sidebar');
+      
+      if (contentBg && floatingSidebar) {
+        const contentRect = contentBg.getBoundingClientRect();
+        floatingSidebar.style.left = (contentRect.left + 10) + 'px';
+        floatingSidebar.style.width = (contentRect.width - 20) + 'px';
+      }
+    }
+    
+    // 初始调整及窗口大小变化时调整
+    setTimeout(updateFloatingSidebarPosition, 800); // 延迟执行确保背景已渲染
+    window.addEventListener('resize', updateFloatingSidebarPosition);
+    
+    // 添加滚动事件监听，控制侧边栏定位
+    const introHeader = document.querySelector('.intro-header');
+    const floatingSidebar = document.getElementById('floating-sidebar');
+    const initialTopDistance = 100; // 与CSS中设置的top值保持一致
+    const transitionBuffer = 80; // 过渡缓冲区，用于平滑过渡
+    
+    // 存储位置信息和状态
+    let headerBottomPagePosition = 0; // 顶部图片底部在页面中的位置
+    let isFixedToHeader = false; // 是否已固定到顶部图片底部
+    let lastScrollTop = 0; // 上次滚动位置，用于判断滚动方向
+    let isTransitioning = false; // 是否正在过渡状态
+    
+    // 使用transform做平滑过渡
+    function smoothTransition(element, startY, endY, duration) {
+      isTransitioning = true;
+      
+      // 记录开始时间
+      const startTime = performance.now();
+      
+      // 使用requestAnimationFrame实现动画
+      function animate(currentTime) {
+        // 计算已经过去的时间比例
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        
+        // 使用缓动函数使动画更自然
+        const easeProgress = easeOutCubic(progress);
+        
+        // 计算当前位置
+        const currentY = startY + (endY - startY) * easeProgress;
+        
+        // 应用变换
+        element.style.transform = `translateY(${currentY}px)`;
+        
+        // 如果动画未完成，继续
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // 动画完成，重置变换并设置最终位置
+          element.style.transform = '';
+          isTransitioning = false;
+          
+          // 如果需要固定位置，此时可以切换到绝对定位
+          if (isFixedToHeader) {
+            element.style.position = 'absolute';
+            element.style.top = headerBottomPagePosition + 'px';
+          }
+        }
+      }
+      
+      // 启动动画
+      requestAnimationFrame(animate);
+    }
+    
+    // 缓动函数：缓出三次方
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+    
+    // 初始化位置信息
+    function initPositions() {
+      if (!introHeader || !floatingSidebar) return;
+      
+      // 计算顶部图片底部在整个页面中的位置
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const headerBottomViewport = introHeader.getBoundingClientRect().bottom;
+      headerBottomPagePosition = scrollTop + headerBottomViewport;
+      lastScrollTop = scrollTop;
+      
+      // 设置初始位置
+      updateSidebarPosition();
+    }
+    
+    // 更新侧边栏位置
+    function updateSidebarPosition() {
+      if (!floatingSidebar || !introHeader || isTransitioning) return;
+      
+      // 获取当前滚动位置和滚动方向
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollingDown = scrollTop > lastScrollTop;
+      const scrollDelta = Math.abs(scrollTop - lastScrollTop);
+      lastScrollTop = scrollTop;
+      
+      // 更新水平位置
+      const contentBg = document.getElementById('sidebar-background');
+      if (contentBg) {
+        const horizPos = contentBg.getBoundingClientRect();
+        floatingSidebar.style.left = (horizPos.left + 10) + 'px';
+      }
+      
+      // 获取顶部图片底部相对于视口的位置
+      const headerBottomViewport = introHeader.getBoundingClientRect().bottom;
+      
+      // 处理从跟随状态到固定状态的平滑过渡
+      if (!scrollingDown && headerBottomViewport > 0 && headerBottomViewport <= initialTopDistance + transitionBuffer) {
+        // 如果向上滚动，顶部图片可见，且底部接近或低于侧边栏初始位置
+        
+        // 计算预期的固定位置
+        const targetPagePosition = scrollTop + headerBottomViewport;
+        
+        // 如果尚未固定且没有在过渡中
+        if (!isFixedToHeader && !isTransitioning) {
+          // 将当前位置设为距离顶部固定距离的位置
+          floatingSidebar.style.position = 'fixed';
+          floatingSidebar.style.top = initialTopDistance + 'px';
+          
+          // 计算需要平移的距离：从当前固定位置到图片底部的差值
+          const translateY = headerBottomViewport - initialTopDistance;
+          
+          // 开始平滑过渡
+          if (translateY > 0) {
+            // 如果需要向下移动侧边栏以对齐图片底部
+            smoothTransition(floatingSidebar, 0, translateY, 300);
+          } else {
+            // 如果需要向上移动侧边栏以对齐图片底部
+            smoothTransition(floatingSidebar, 0, translateY, 300);
+          }
+          
+          // 记录固定位置和状态
+          headerBottomPagePosition = targetPagePosition;
+          isFixedToHeader = true;
+          return;
+        }
+      }
+      
+      // 如果已固定且向下滚动超过一定距离
+      if (isFixedToHeader && scrollingDown) {
+        // 检查是否应该解除固定
+        if (scrollTop + initialTopDistance > headerBottomPagePosition) {
+          // 解除固定状态
+          isFixedToHeader = false;
+          floatingSidebar.style.position = 'fixed';
+          floatingSidebar.style.top = initialTopDistance + 'px';
+        } else if (!isTransitioning) {
+          // 保持固定状态
+          floatingSidebar.style.position = 'absolute';
+          floatingSidebar.style.top = headerBottomPagePosition + 'px';
+        }
+      } else if (isFixedToHeader && !isTransitioning) {
+        // 已固定且非过渡中，保持固定状态
+        floatingSidebar.style.position = 'absolute';
+        floatingSidebar.style.top = headerBottomPagePosition + 'px';
+      } else if (!isFixedToHeader && !isTransitioning) {
+        // 默认的跟随行为
+        floatingSidebar.style.position = 'fixed';
+        floatingSidebar.style.top = initialTopDistance + 'px';
+      }
+    }
+    
+    // 初始设置
+    setTimeout(initPositions, 800);
+    
+    // 事件监听
+    window.addEventListener('scroll', updateSidebarPosition);
+    window.addEventListener('resize', function() {
+      updateFloatingSidebarPosition();
+      initPositions(); // 重新计算位置信息
+    });
+  });
+</script>

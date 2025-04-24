@@ -33,6 +33,7 @@ function initGeometryBackground() {
   const headerElement = document.querySelector('.intro-header');
   const contentElement = document.querySelector('.container .row .postlist-container') || 
                          document.querySelector('.container .row .col-lg-8');
+  const sidebarElement = document.querySelector('.sidebar-container');
   
   // 确保我们找到了内容元素
   if (!contentElement) {
@@ -48,6 +49,52 @@ function initGeometryBackground() {
   const safeMargin = 50; // 内容两侧额外的安全间距
   const contentLeft = contentRect.left - safeMargin;
   const contentRight = contentRect.right + safeMargin;
+
+  // 创建内容区域背景矩形
+  const contentBg = document.createElement('div');
+  contentBg.id = 'content-background';
+  contentBg.style.position = 'fixed';
+  contentBg.style.top = '0';
+  contentBg.style.left = contentLeft + 'px';
+  contentBg.style.width = (contentRight - contentLeft) + 'px';
+  contentBg.style.height = '100%';
+  contentBg.style.backgroundColor = 'rgba(230, 240, 250, 0.1)'; // 淡蓝色，与两侧灰色图形形成对比
+  contentBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1)'; // 两侧阴影
+  contentBg.style.zIndex = '-1'; // 确保在几何图形之上，但在内容之下
+  contentBg.style.borderLeft = '1px solid rgba(150, 180, 220, 0.1)'; // 左边框
+  contentBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.1)'; // 右边框
+  document.body.insertBefore(contentBg, container.nextSibling);
+
+  // 创建侧边栏背景矩形
+  const sidebarBg = document.createElement('div');
+  sidebarBg.id = 'sidebar-background';
+  sidebarBg.style.position = 'fixed';
+  sidebarBg.style.top = '0';
+  sidebarBg.style.left = (contentRight + 20) + 'px'; // 在内容区域右侧20px处
+  sidebarBg.style.width = '280px'; // 固定宽度
+  sidebarBg.style.height = '100%';
+  sidebarBg.style.backgroundColor = 'rgba(230, 240, 250, 0.1)'; // 与内容区域背景相同
+  sidebarBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1)';
+  sidebarBg.style.zIndex = '-1';
+  sidebarBg.style.borderLeft = '1px solid rgba(150, 180, 220, 0.1)';
+  sidebarBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.1)';
+  sidebarBg.style.border = '1px solid rgba(150, 180, 220, 0.15)';
+  document.body.insertBefore(sidebarBg, contentBg.nextSibling);
+
+  // 处理窗口大小变化时更新内容背景
+  function updateContentBackground() {
+    if (contentElement) {
+      contentRect = contentElement.getBoundingClientRect();
+      const updatedContentLeft = contentRect.left - safeMargin;
+      const updatedContentRight = contentRect.right + safeMargin;
+      
+      contentBg.style.left = updatedContentLeft + 'px';
+      contentBg.style.width = (updatedContentRight - updatedContentLeft) + 'px';
+      
+      // 更新侧边栏背景位置
+      sidebarBg.style.left = (updatedContentRight + 20) + 'px';
+    }
+  }
 
   // 设置场景、相机和渲染器
   const scene = new THREE.Scene();
@@ -329,8 +376,12 @@ function initGeometryBackground() {
     const viewHeight = window.innerHeight;
     const maxSize = Math.min(viewWidth, viewHeight) * 0.04; // 小尺寸，视窗的4%
     
-    // 计算左侧区域宽度
-    const leftAreaWidth = contentLeft;
+    // 计算左侧区域宽度，添加额外的边距防止越界
+    const safetyMargin = maxSize * 2; // 安全边距为最大图形尺寸的2倍
+    const leftAreaWidth = Math.max(0, contentLeft - safetyMargin);
+    
+    // 若可用区域太小，减少图形数量
+    const adjustedShapeCount = leftAreaWidth < 100 ? Math.floor(shapeCount / 2) : shapeCount;
     
     // 为了均匀分布，我们将空间划分为网格
     const gridCols = 5; // 水平方向划分为5列
@@ -339,7 +390,7 @@ function initGeometryBackground() {
     const cellWidth = leftAreaWidth / gridCols;
     const cellHeight = viewHeight / gridRows;
     
-    for (let i = 0; i < shapeCount; i++) {
+    for (let i = 0; i < adjustedShapeCount; i++) {
       const shapeType = Math.floor(Math.random() * 10); // 10种形状类型
       const size = maxSize * (0.2 + Math.random() * 0.8); // 随机化尺寸但保持较小
       
@@ -353,8 +404,11 @@ function initGeometryBackground() {
       const xOffset = (Math.random() * 0.8 + 0.1) * cellWidth; // 10%-90%的单元格宽度
       const yOffset = (Math.random() * 0.8 + 0.1) * cellHeight; // 10%-90%的单元格高度
       
-      // 计算最终位置
-      const xPos = col * cellWidth + xOffset - viewWidth/2;
+      // 计算最终位置 - 确保所有图形都在左侧区域内，不会越过中心矩形
+      // 添加边界限制，确保图形及其边缘不会越过内容区域
+      // 在 X 轴位置上添加额外的安全距离
+      const safeX = Math.min(col * cellWidth + xOffset, leftAreaWidth - size * 1.5);
+      const xPos = safeX - viewWidth/2;
       const yPos = (row * cellHeight + yOffset - viewHeight/2);
       
       // 设置图形位置
@@ -376,9 +430,13 @@ function initGeometryBackground() {
     const viewHeight = window.innerHeight;
     const maxSize = Math.min(viewWidth, viewHeight) * 0.04; // 小尺寸，视窗的4%
     
-    // 计算右侧区域开始位置和宽度
-    const rightAreaStart = contentRight;
-    const rightAreaWidth = viewWidth - rightAreaStart;
+    // 计算右侧区域开始位置和宽度，添加额外的边距防止越界
+    const safetyMargin = maxSize * 2; // 安全边距为最大图形尺寸的2倍
+    const rightAreaStart = contentRight + safetyMargin;
+    const rightAreaWidth = Math.max(0, viewWidth - rightAreaStart);
+    
+    // 若可用区域太小，减少图形数量
+    const adjustedShapeCount = rightAreaWidth < 100 ? Math.floor(shapeCount / 2) : shapeCount;
     
     // 为了均匀分布，我们将空间划分为网格
     const gridCols = 5; // 水平方向划分为5列
@@ -387,7 +445,7 @@ function initGeometryBackground() {
     const cellWidth = rightAreaWidth / gridCols;
     const cellHeight = viewHeight / gridRows;
     
-    for (let i = 0; i < shapeCount; i++) {
+    for (let i = 0; i < adjustedShapeCount; i++) {
       const shapeType = Math.floor(Math.random() * 10); // 10种形状类型
       const size = maxSize * (0.2 + Math.random() * 0.8); // 随机化尺寸但保持较小
       
@@ -401,8 +459,11 @@ function initGeometryBackground() {
       const xOffset = (Math.random() * 0.8 + 0.1) * cellWidth; // 10%-90%的单元格宽度
       const yOffset = (Math.random() * 0.8 + 0.1) * cellHeight; // 10%-90%的单元格高度
       
-      // 计算最终位置
-      const xPos = rightAreaStart + col * cellWidth + xOffset - viewWidth/2;
+      // 计算最终位置 - 确保所有图形都在右侧区域内，不会越过中心矩形
+      // 添加边界限制，确保图形及其边缘不会越过内容区域
+      // 在 X 轴位置上添加额外的安全距离
+      const safeX = Math.max(rightAreaStart + col * cellWidth + xOffset, rightAreaStart + size * 1.5);
+      const xPos = safeX - viewWidth/2;
       const yPos = (row * cellHeight + yOffset - viewHeight/2);
       
       // 设置图形位置
@@ -446,6 +507,9 @@ function initGeometryBackground() {
       const contentLeft = contentRect.left - safeMargin;
       const contentRight = contentRect.right + safeMargin;
     }
+
+    // 更新内容背景
+    updateContentBackground();
     
     // 重新调整图形位置以适应新的屏幕尺寸
     scene.remove(leftShapes);
@@ -479,10 +543,32 @@ function initGeometryBackground() {
     mouseY += (targetMouseY - mouseY) * 0.05;
     
     // 根据鼠标位置调整图形组的位置，实现跟随效果
-    leftShapes.position.x = -mouseX * window.innerWidth * 0.03;
+    // 限制移动范围，确保不会越过中心区域
+    const maxMove = window.innerWidth * 0.03; // 最大移动距离
+
+    // 使用更简单的方法计算移动距离
+    // 当鼠标在页面左侧时，限制右侧图形向左移动
+    // 当鼠标在页面右侧时，限制左侧图形向右移动
+    
+    // 左侧图形组的移动 - 仅在鼠标在页面右侧(mouseX>0)时限制向右移动
+    let leftMoveX = -mouseX * maxMove;
+    if (mouseX < 0) {
+      // 向右移动幅度降低到原来的30%，减少移动到内容区域的可能性
+      leftMoveX = -mouseX * maxMove * 0.3;
+    }
+    
+    // 右侧图形组的移动 - 仅在鼠标在页面左侧(mouseX<0)时限制向左移动
+    let rightMoveX = -mouseX * maxMove;
+    if (mouseX > 0) {
+      // 向左移动幅度降低到原来的30%，减少移动到内容区域的可能性
+      rightMoveX = -mouseX * maxMove * 0.3;
+    }
+    
+    // 应用计算后的移动
+    leftShapes.position.x = leftMoveX;
     leftShapes.position.y = -mouseY * window.innerHeight * 0.02;
     
-    rightShapes.position.x = -mouseX * window.innerWidth * 0.03;
+    rightShapes.position.x = rightMoveX;
     rightShapes.position.y = -mouseY * window.innerHeight * 0.02;
     
     renderer.render(scene, camera);

@@ -1,7 +1,7 @@
 # Site settings
 title: sorrymaker Blog
 SEOTitle: sorrymaker的博客 | sorrymaker Blog
-header-img: img/home-bg.jpg
+header-img: img/index_bg_1.jpg
 email: sorrymaker2111@gmail.com
 description: "这里是 @sorrymaker 的个人博客，与你一起发现更大的世界 | 要做一个有 swag 的程序员"
 keyword: "sorrymaker,sorrymakerx Blog, 博客, 个人网站, 互联网, Web, JavaScript, React, React Native, 前端, 设计"
@@ -14,9 +14,9 @@ future: true
 # SNS settings
 RSS: false
 weibo_username: sorrymaker2111
-zhihu_username:  sorrymaker2111
-github_username:  sorrymaker2111
-twitter_username:  sorrymaker2111
+zhihu_username: sorrymaker2111
+github_username: sorrymaker2111
+twitter_username: sorrymaker2111
 #facebook_username:   sorrymaker
 #linkedin_username:  firstname-lastname-idxxxx
 
@@ -75,7 +75,7 @@ ga_domain: huangxuan.me
 # Sidebar settings
 sidebar: true # whether or not using Sidebar.
 sidebar-about-description: "Yuzusoft大三忠实粉丝"
-sidebar-avatar: /img/42dbbbf175a6237ba68557a9789f0fea8735ebb6.jpg 
+sidebar-avatar: /img/42dbbbf175a6237ba68557a9789f0fea8735ebb6.jpg
 
 # Featured Tags
 featured-tags: true # whether or not using Feature-Tags

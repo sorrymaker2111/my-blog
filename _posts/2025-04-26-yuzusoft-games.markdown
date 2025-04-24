@@ -2,7 +2,7 @@
 layout: post
 title: "柚子社作品赏析"
 subtitle: "温暖人心的视觉小说"
-date: 2023-01-06 12:00:00
+date: 2025-04-26 12:00:00
 author: "sorrymaker"
 header-img: "img/post-bg-yuzusoft.jpg"
 catalog: true

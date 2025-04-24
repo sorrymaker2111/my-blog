@@ -2,7 +2,7 @@
 layout: post
 title: "Galgame赏析与评测"
 subtitle: "视觉小说的艺术之美"
-date: 2023-01-05 12:00:00
+date: 2025-04-25 12:00:00
 author: "sorrymaker"
 header-img: "img/post-bg-galgame.jpg"
 catalog: true

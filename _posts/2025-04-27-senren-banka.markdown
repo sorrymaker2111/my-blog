@@ -2,7 +2,7 @@
 layout: post
 title: "《千恋*万花》游戏评测"
 subtitle: "柚子社的传统文化之旅"
-date: 2023-01-07 12:00:00
+date: 2025-04-27 12:00:00
 author: "sorrymaker"
 header-img: "img/post-bg-senren-banka.jpg"
 catalog: true

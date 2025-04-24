@@ -4,7 +4,7 @@ SEOTitle: sorrymaker的博客 | sorrymaker Blog
 header-img: img/index_bg_1.jpg
 email: sorrymaker2111@gmail.com
 description: "这里是 @sorrymaker 的个人博客，与你一起发现更大的世界 | 要做一个有 swag 的程序员"
-keyword: "sorrymaker,sorrymakerx Blog, 博客, 个人网站, 互联网, Web, JavaScript, React, React Native, 前端, 设计"
+keyword: "sorrymaker, java, springboot, Web, galgame, 柚子社, 千恋万花, sorrymaker随想录"
 url: "https://sorrymaker2111.me" # your host, for absolute URL
 baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'
 
@@ -79,7 +79,7 @@ sidebar-avatar: /img/42dbbbf175a6237ba68557a9789f0fea8735ebb6.jpg
 
 # Featured Tags
 featured-tags: true # whether or not using Feature-Tags
-featured-condition-size: 1 # A tag will be featured if the size of it is more than this condition value
+featured-condition-size: 0 # A tag will be featured if the size of it is more than this condition value
 
 # Progressive Web Apps
 chrome-tab-theme-color: "#000000"

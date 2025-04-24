@@ -39,8 +39,11 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
                     <div class="tags">
+                        {% assign featured_tags = "java,springboot,sorrymaker随想录,Web,galgame,柚子社,千恋万花" | split: "," %}
                         {% for tag in page.tags %}
+                        {% if featured_tags contains tag %}
                         <a class="tag" href="{{ site.baseurl }}/archive/?tag={{ tag | url_encode }}" title="{{ tag }}">{{ tag }}</a>
+                        {% endif %}
                         {% endfor %}
                     </div>
                     <h1>{{ page.title }}</h1>
@@ -77,8 +80,11 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
                     <div class="tags">
+                        {% assign featured_tags = "java,springboot,sorrymaker随想录,Web,galgame,柚子社,千恋万花" | split: "," %}
                         {% for tag in page.tags %}
+                        {% if featured_tags contains tag %}
                         <a class="tag" href="{{ site.baseurl }}/archive/?tag={{ tag | url_encode }}" title="{{ tag }}">{{ tag }}</a>
+                        {% endif %}
                         {% endfor %}
                     </div>
                     <h1>{{ page.title }}</h1>

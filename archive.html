@@ -24,13 +24,16 @@ https://github.com/kitian616/jekyll-TeXt-theme
 				</a>
 
 				{% capture tags %}
+				{% assign featured_tags = "java,springboot,sorrymaker随想录,Web,galgame,柚子社,千恋万花" | split: "," %}
 				{% for tag in site.tags %}
+				{% if featured_tags contains tag[0] %}
 				<a data-sort="{{ site.posts.size | minus: tag[1].size | prepend: '0000' | slice: -4, 4 }}"
 					data-encode="{{ tag[0] | strip | url_encode }}" class="tag-button" title="{{ tag[0] }}"
 					rel="{{ tag[1].size }}">
 					{{ tag[0] }}
 					<sup>{{tag[1].size}}</sup>
 				</a>__SEPERATOR__
+				{% endif %}
 				{% endfor %}
 				{% endcapture %}
 				{{ tags | split:'__SEPERATOR__' | sort }}

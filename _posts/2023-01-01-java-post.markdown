@@ -1,0 +1,52 @@
+---
+layout: post
+title: "Java编程基础与进阶"
+subtitle: "Java开发者必知必会的知识点"
+date: 2023-01-01 12:00:00
+author: "sorrymaker"
+header-img: "img/post-bg-java.jpg"
+catalog: true
+tags:
+  - java
+---
+
+## Java 编程基础
+
+Java 是一种广泛使用的计算机编程语言，拥有跨平台、面向对象、泛型编程的特性，广泛应用于企业级 Web 应用开发和移动应用开发。
+
+### Java 的主要特性
+
+- 面向对象
+- 平台独立性
+- 简单性
+- 安全性
+- 多线程
+- 分布式
+
+### Java 基础语法
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+## Java 进阶知识
+
+### 集合框架
+
+Java 集合框架提供了一套性能优良的接口和类来存储和操作数据集合。
+
+### 多线程编程
+
+Java 提供了内置的多线程机制，可以开发高并发应用。
+
+### Java 虚拟机
+
+JVM 是 Java 平台的核心，负责将 Java 字节码转换为特定机器代码并执行。
+
+## 结语
+
+Java 作为一门成熟的编程语言，在企业开发中占有重要地位，学好 Java 对于程序员职业发展有很大帮助。

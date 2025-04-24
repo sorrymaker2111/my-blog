@@ -93,12 +93,15 @@ page-mathjax: false
 # Friends
 friends:
   [
-    { title: "乱序（Midare）", href: "http://mida.re/" },
-    { title: "Ebn Zhang", href: "https://ebnbin.dev/" },
-    { title: "Kun Qian", href: "http://kunq.me" },
-    { title: "Sherry Woo", href: "https://sherrywoo.me/" },
-    { title: "SmdCn", href: "http://blog.smdcn.net" },
-    { title: "JiyinYiyong", href: "http://tiye.me/" },
-    { title: "DHong Say", href: "http://dhong.co" },
-    { title: "尹峰以为", href: "http://ingf.github.io/" },
+    {
+      title: "柚子社官网",
+      href: "https://www.facebook.com/yuzusoft2006/?locale=zh_CN",
+    },
+    { title: "Java文档", href: "https://docs.oracle.com/en/java/" },
+    { title: "Spring官网", href: "https://spring.io/" },
+    { title: "MDN Web文档", href: "https://developer.mozilla.org/zh-CN/" },
+    { title: "西南交通大学", href: "https://www.swjtu.edu.cn/" },
+    { title: "Galgame资讯", href: "https://www.2dfan.com/" },
+    { title: "GitHub", href: "https://github.com/" },
+    { title: "StackOverflow", href: "https://stackoverflow.com/" },
   ]

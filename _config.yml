@@ -26,7 +26,8 @@ douyin_url: https://www.douyin.com/user/MS4wLjABAAAAvRciV_I85LBc2bbp1Vqxp5v2bVOg
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
 highlighter: rouge
 permalink: pretty
-paginate: 10
+paginate: 5
+paginate_path: "/page/:num/"
 exclude:
   [
     "less",

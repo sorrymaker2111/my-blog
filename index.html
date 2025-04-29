@@ -53,19 +53,78 @@ description: "「组一辈子乐队吧！」"
         color: #777;
         font-size: 14px;
     }
+    
+    /* 音乐播放器样式 */
+    .music-player-container {
+        position: relative; 
+        width: 100%; 
+        max-width: 730px; 
+        margin: 0 auto;
+    }
+    
+    .music-player-wrapper {
+        position: relative; 
+        overflow: hidden;
+    }
+    
+    .music-player-wrapper.pc {
+        padding-top: 56.25%; /* 16:9 比例 */
+    }
+    
+    .music-player-wrapper.mobile {
+        padding-top: 133.33%; /* 3:4 比例，更高的播放器适合移动端 */
+    }
+    
+    .music-player-iframe {
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%;
+    }
 </style>
 
 <div class="music-player-title">
     <h4>我喜欢的歌单</h4>
 </div>
 
-<div class="music-player-container" style="position: relative; width: 100%; max-width: 730px; margin: 0 auto;">
-    <div style="padding-top: 56.25%; position: relative; overflow: hidden;">
-        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" 
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-            src="https://music.163.com/m/outchain/player?type=0&id=13052360489&auto=0&height=430"></iframe>
+<div class="music-player-container">
+    <div id="musicPlayerWrapper" class="music-player-wrapper pc">
+        <iframe id="musicPlayerIframe" frameborder="no" border="0" marginwidth="0" marginheight="0" 
+            class="music-player-iframe" 
+            src="https://music.163.com/outchain/player?type=0&id=13052360489&auto=0&height=430"></iframe>
     </div>
 </div>
+
+<script>
+    // 检测设备类型
+    function isMobileDevice() {
+        return (window.innerWidth <= 768) || 
+               (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    }
+    
+    // 调整播放器
+    function adjustMusicPlayer() {
+        var wrapper = document.getElementById('musicPlayerWrapper');
+        var iframe = document.getElementById('musicPlayerIframe');
+        
+        if (isMobileDevice()) {
+            wrapper.className = 'music-player-wrapper mobile';
+            // 移动端使用/m/前缀的播放器
+            if (iframe.src.indexOf('/m/outchain') === -1) {
+                iframe.src = iframe.src.replace('/outchain', '/m/outchain');
+            }
+        } else {
+            wrapper.className = 'music-player-wrapper pc';
+            // PC端使用普通播放器
+            iframe.src = iframe.src.replace('/m/outchain', '/outchain');
+        }
+    }
+    
+    // 页面加载和窗口大小改变时调整
+    window.addEventListener('load', adjustMusicPlayer);
+    window.addEventListener('resize', adjustMusicPlayer);
+</script>
 
 <!-- 页面信息 -->
 <div class="page-count">

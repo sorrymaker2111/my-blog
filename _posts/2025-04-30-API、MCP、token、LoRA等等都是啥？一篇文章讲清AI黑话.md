@@ -78,5 +78,5 @@ tags:
 
 ## 最后
 
-本文章内容总结来自视频[API、MCP、token、LoRA 等等都是啥？一个视频讲清 AI 黑话](https://www.bilibili.com/video/BV1iGjAzfE7Z/?spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=f11f78ab2e1ae6593a63c6303aceba1e)。
+本文章内容总结来自视频[API、MCP、token、LoRA 等等都是啥？一个视频讲清 AI 黑话](https://www.bilibili.com/video/BV1iGjAzfE7Z/?spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=f11f78ab2e1ae6593a63c6303aceba1e)。<br>  
 欢迎评论区交流！

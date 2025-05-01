@@ -28,6 +28,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden; /* 防止内容溢出 */
+        transform: translateZ(0); /* 硬件加速 */
     }
     
     body.home-page .intro-header .site-heading {
@@ -35,6 +37,7 @@
         text-align: center;
         width: 100%;
         max-width: 100%;
+        margin: 0 auto; /* 确保居中 */
     }
     
     /* 打字机效果样式 */
@@ -60,20 +63,50 @@
     .typewriter-container {
         width: 100%;
         text-align: center;
+        position: relative; /* 为绝对定位子元素提供参考 */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 20px; /* 增加两侧间距，避免文字贴边 */
     }
     
     /* 移动端优化 */
     @media (max-width: 767px) {
+        body.home-page header.intro-header {
+            height: 100vh; /* 修复移动端全屏问题 */
+            padding: 0;
+        }
+        
+        body.home-page .intro-header .site-heading {
+            width: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        
         body.home-page h1#typewriter-title {
-            font-size: 36px;
+            font-size: 32px; /* 减小标题字体 */
             line-height: 1.2;
-            padding: 0 15px;
+            margin-bottom: 10px;
+            padding: 0 5px;
+            width: 100%;
+            white-space: normal; /* 允许换行 */
+            word-break: break-word; /* 确保长词可以换行 */
         }
         
         body.home-page span#typewriter-subtitle {
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1.4;
-            padding: 0 20px;
+            padding: 0 10px;
+            width: 100%;
+            white-space: normal;
+            word-break: break-word;
+        }
+        
+        .typewriter-container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 15px;
         }
     }
 </style>
@@ -170,8 +203,8 @@
           {% if page.url == "/" or page.url == "/index.html" %}
             <!-- 首页使用打字机效果 -->
             <div class="typewriter-container">
-              <h1 id="typewriter-title" class="typewriter-effect" data-text="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}"></h1>
-              <span id="typewriter-subtitle" class="subheading typewriter-effect" data-text="{{ page.description }}"></span>
+              <h1 id="typewriter-title" class="typewriter-effect" data-text="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}" data-mobile-text="{% if page.mobile-title %}{{ page.mobile-title }}{% else %}{{ page.title }}{% endif %}"></h1>
+              <span id="typewriter-subtitle" class="subheading typewriter-effect" data-text="{{ page.description }}" data-mobile-text="{{ page.mobile-description | default: page.description }}"></span>
             </div>
             <!-- 引入打字机效果脚本 -->
             <script src="{{ '/js/typewriter.js' | prepend: site.baseurl }}"></script>

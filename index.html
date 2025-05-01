@@ -260,22 +260,204 @@ description: "「组一辈子乐队吧！」"
 <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
 <script>LA.init({id:"3M1p9Hhnk53mxLF7",ck:"3M1p9Hhnk53mxLF7"})</script>
 
-<!-- 自动更新内容脚本 -->
+<!-- 页面内容缓存和自动更新脚本 -->
 <script>
+  // 全局内容缓存存储
+  const pageCache = {
+    // 缓存内容的数据结构
+    contents: {},
+    // 缓存时间戳
+    timestamps: {},
+    // 缓存有效期（毫秒）
+    maxAge: 3600000, // 默认1小时
+    
+    // 获取缓存键
+    getKey: function(url) {
+      // 去除URL中的刷新参数和时间戳
+      return url.replace(/[?&]refresh=true/, '')
+                .replace(/[?&]t=\d+/, '')
+                .replace(/[?&]_=\d+/, '');
+    },
+    
+    // 存储内容到缓存
+    store: function(url, content) {
+      const key = this.getKey(url);
+      this.contents[key] = content;
+      this.timestamps[key] = Date.now();
+      
+      // 同时保存到localStorage（如果可用）
+      try {
+        const cacheObject = {
+          content: content,
+          timestamp: this.timestamps[key]
+        };
+        localStorage.setItem(`page_cache_${key}`, JSON.stringify(cacheObject));
+      } catch (e) {
+        console.warn('无法将缓存写入localStorage', e);
+      }
+    },
+    
+    // 从缓存获取内容
+    get: function(url) {
+      const key = this.getKey(url);
+      
+      // 首先检查内存缓存
+      if (this.contents[key] && this.timestamps[key]) {
+        const age = Date.now() - this.timestamps[key];
+        if (age < this.maxAge) {
+          return this.contents[key];
+        }
+      }
+      
+      // 如果内存中没有有效缓存，检查localStorage
+      try {
+        const storedCache = localStorage.getItem(`page_cache_${key}`);
+        if (storedCache) {
+          const cacheObject = JSON.parse(storedCache);
+          const age = Date.now() - cacheObject.timestamp;
+          
+          if (age < this.maxAge) {
+            // 将缓存加载到内存中
+            this.contents[key] = cacheObject.content;
+            this.timestamps[key] = cacheObject.timestamp;
+            return cacheObject.content;
+          } else {
+            // 清除过期缓存
+            localStorage.removeItem(`page_cache_${key}`);
+          }
+        }
+      } catch (e) {
+        console.warn('无法从localStorage读取缓存', e);
+      }
+      
+      return null;
+    },
+    
+    // 清除特定URL的缓存
+    clear: function(url) {
+      const key = this.getKey(url);
+      delete this.contents[key];
+      delete this.timestamps[key];
+      
+      try {
+        localStorage.removeItem(`page_cache_${key}`);
+      } catch (e) {
+        console.warn('无法从localStorage删除缓存', e);
+      }
+    },
+    
+    // 清除所有缓存
+    clearAll: function() {
+      this.contents = {};
+      this.timestamps = {};
+      
+      try {
+        // 只清除我们的缓存项，不影响其他localStorage数据
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.startsWith('page_cache_')) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (e) {
+        console.warn('无法清除localStorage缓存', e);
+      }
+    }
+  };
+  
   // 检查URL中是否有强制刷新参数
   function hasRefreshParam() {
     return window.location.href.indexOf('refresh=true') > -1;
   }
   
+  // 预加载页面内容
+  function preloadPageContent(url, callback) {
+    // 构建针对每个页面的缓存URL
+    let cacheUrl = url;
+    
+    // 添加时间戳参数以避免缓存
+    if (cacheUrl.indexOf('?') > -1) {
+      cacheUrl += '&_=' + Date.now();
+    } else {
+      cacheUrl += '?_=' + Date.now();
+    }
+    
+    fetch(cacheUrl, {
+      method: 'GET',
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(response => response.text())
+    .then(html => {
+      // 解析页面内容
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      
+      // 获取主要内容部分
+      const mainContent = doc.querySelector('.main-content-container');
+      
+      if (mainContent) {
+        // 存储到缓存
+        pageCache.store(url, mainContent.innerHTML);
+        
+        // 如果有回调函数，执行它
+        if (callback && typeof callback === 'function') {
+          callback(mainContent.innerHTML);
+        }
+      }
+    })
+    .catch(error => {
+      console.warn('页面预加载失败:', error);
+      // 如果有回调函数，仍然执行它，但传递null表示失败
+      if (callback && typeof callback === 'function') {
+        callback(null);
+      }
+    });
+  }
+  
   // 自动刷新页面内容
   function autoRefreshContent(forceRefresh = false) {
-    // 检查是否有新内容可用，如果是强制刷新则添加时间戳参数避免缓存
+    // 当前URL
+    const currentUrl = pageCache.getKey(window.location.href);
+    
+    // 如果强制刷新，清除缓存
+    if (forceRefresh) {
+      pageCache.clear(currentUrl);
+    }
+    
+    // 尝试从缓存获取内容
+    const cachedContent = !forceRefresh ? pageCache.get(currentUrl) : null;
+    
+    if (cachedContent) {
+      // 使用缓存的内容更新页面
+      const currentPosts = document.querySelector('.main-content-container');
+      if (currentPosts) {
+        currentPosts.innerHTML = cachedContent;
+        
+        // 重新初始化音乐播放器（如果存在）
+        if (typeof adjustMusicPlayer === 'function') {
+          setTimeout(adjustMusicPlayer, 100);
+        }
+        
+        // 从URL中移除刷新参数
+        if (hasRefreshParam() && window.history && window.history.replaceState) {
+          const cleanUrl = window.location.href.replace(/[?&]refresh=true/, '').replace(/[?&]t=\d+/, '');
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
+        
+        // 预加载其他页面
+        setTimeout(preloadOtherPages, 1000);
+        
+        return;
+      }
+    }
+    
+    // 如果没有可用的缓存，从服务器获取新内容
     const url = forceRefresh 
       ? window.location.href + (hasRefreshParam() ? '' : (window.location.href.indexOf('?') > -1 ? '&' : '?') + 'refresh=true&t=' + new Date().getTime())
       : window.location.href;
     
     fetch(url, {
-      cache: forceRefresh ? 'no-cache' : 'no-store',
+      cache: forceRefresh ? 'no-cache' : 'default',
       headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
     .then(response => response.text())
@@ -294,6 +476,9 @@ description: "「组一辈子乐队吧！」"
           // 只更新内容部分，不重载整个页面
           currentPosts.innerHTML = newPosts.innerHTML;
           
+          // 将新内容存储到缓存
+          pageCache.store(currentUrl, newPosts.innerHTML);
+          
           // 重新初始化音乐播放器（如果存在）
           if (typeof adjustMusicPlayer === 'function') {
             setTimeout(adjustMusicPlayer, 100);
@@ -304,16 +489,50 @@ description: "「组一辈子乐队吧！」"
             const cleanUrl = window.location.href.replace(/[?&]refresh=true/, '').replace(/[?&]t=\d+/, '');
             window.history.replaceState({}, document.title, cleanUrl);
           }
+          
+          // 预加载其他页面
+          setTimeout(preloadOtherPages, 1000);
         }
       }
     })
     .catch(error => {
-      // 静默处理错误，不在控制台显示
       console.error("刷新内容时发生错误:", error);
     });
   }
   
-  // 修改所有内部链接，添加刷新参数
+  // 预加载所有相关页面
+  function preloadOtherPages() {
+    // 获取所有链接
+    const links = document.querySelectorAll('a');
+    const internalLinks = new Set();
+    const baseUrl = '{{ site.baseurl }}';
+    const domain = window.location.origin;
+    
+    // 收集所有内部链接
+    links.forEach(link => {
+      if (link.href && (link.href.startsWith(domain) || link.href.startsWith(baseUrl) || link.href.startsWith('/'))) {
+        // 只处理相对路径内部链接和分页链接
+        if (link.href.indexOf('/page/') > -1 || link.href.indexOf('index.html') > -1 || 
+            link.href === domain + '/' || link.href === baseUrl + '/' || link.href === '/') {
+          internalLinks.add(pageCache.getKey(link.href));
+        }
+      }
+    });
+    
+    // 预加载所有内部链接（最多5个，避免过多请求）
+    let count = 0;
+    for (const link of internalLinks) {
+      if (count >= 5) break;
+      
+      // 只预加载尚未缓存的页面
+      if (!pageCache.get(link)) {
+        preloadPageContent(link);
+        count++;
+      }
+    }
+  }
+  
+  // 修改所有内部链接，优化点击体验
   function modifyInternalLinks() {
     const domain = window.location.origin;
     const baseUrl = '{{ site.baseurl }}';
@@ -327,7 +546,44 @@ description: "「组一辈子乐队吧！」"
         
         // 添加新的点击事件处理
         link.onclick = function(e) {
-          // 如果链接已经包含refresh参数，则不再添加
+          // 设置会话存储，标记需要刷新
+          sessionStorage.setItem('lastClickUrl', pageCache.getKey(link.href));
+          
+          // 检查是否有缓存的内容
+          const cachedContent = pageCache.get(link.href);
+          if (cachedContent) {
+            // 如果是首页链接，可以应用缓存内容而不是跳转
+            if (link.href.indexOf('index.html') > -1 || 
+                link.href === domain + '/' || 
+                link.href === baseUrl + '/' || 
+                link.href === '/') {
+              e.preventDefault();
+              
+              // 应用缓存内容
+              const currentPosts = document.querySelector('.main-content-container');
+              if (currentPosts) {
+                currentPosts.innerHTML = cachedContent;
+                
+                // 更新URL但不刷新页面
+                if (window.history && window.history.pushState) {
+                  window.history.pushState({}, document.title, link.href);
+                }
+                
+                // 重新初始化音乐播放器（如果存在）
+                if (typeof adjustMusicPlayer === 'function') {
+                  setTimeout(adjustMusicPlayer, 100);
+                }
+                
+                // 滚动到顶部
+                window.scrollTo(0, 0);
+                
+                // 不继续执行原始点击事件
+                return false;
+              }
+            }
+          }
+          
+          // 如果没有缓存或不是首页，添加刷新参数
           if (link.href.indexOf('refresh=true') === -1) {
             // 确定正确的分隔符
             const separator = link.href.indexOf('?') > -1 ? '&' : '?';
@@ -335,7 +591,7 @@ description: "「组一辈子乐队吧！」"
             link.href = link.href + separator + 'refresh=true';
           }
           
-          // 调用原始的点击事件处理（如果有）
+          // 调用原始点击事件处理（如果有）
           if (originalClick) {
             return originalClick.call(this, e);
           }
@@ -346,10 +602,27 @@ description: "「组一辈子乐队吧！」"
 
   // 页面加载完成后立即执行初始化
   document.addEventListener('DOMContentLoaded', function() {
+    // 检查本地缓存，确保首次加载能从缓存获取
+    const currentUrl = pageCache.getKey(window.location.href);
+    let cachedContent = pageCache.get(currentUrl);
+    
+    // 如果找到有效缓存，立即使用它
+    if (cachedContent) {
+      const contentContainer = document.querySelector('.main-content-container');
+      if (contentContainer) {
+        contentContainer.innerHTML = cachedContent;
+        
+        // 如果页面有音乐播放器，初始化它
+        if (typeof adjustMusicPlayer === 'function') {
+          setTimeout(adjustMusicPlayer, 100);
+        }
+      }
+    }
+    
     // 检查是否需要强制刷新（来自其他页面跳转）
     const needsForceRefresh = hasRefreshParam() || sessionStorage.getItem('needsRefresh') === 'true';
     
-    // 立即执行一次刷新，如果需要则强制刷新
+    // 执行刷新，不论是否有缓存都刷新一次确保内容最新
     autoRefreshContent(needsForceRefresh);
     
     // 重置刷新标志
@@ -361,17 +634,49 @@ description: "「组一辈子乐队吧！」"
     // 监听页面可见性变化（当用户从其他标签页回到此页面时）
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'visible') {
-        // 用户回到页面，执行刷新
+        // 用户回到页面，检查缓存是否仍然有效
+        if (pageCache.get(currentUrl)) {
+          // 如果缓存有效，检查更新但不强制刷新
+          autoRefreshContent(false);
+        } else {
+          // 如果缓存过期，执行强制刷新
+          autoRefreshContent(true);
+        }
+      }
+    });
+    
+    // 监听浏览器前进/后退事件
+    window.addEventListener('popstate', function(event) {
+      // 获取当前URL的缓存内容
+      const newUrl = pageCache.getKey(window.location.href);
+      const cacheContent = pageCache.get(newUrl);
+      
+      if (cacheContent) {
+        // 应用缓存内容而不重新加载
+        const contentContainer = document.querySelector('.main-content-container');
+        if (contentContainer) {
+          contentContainer.innerHTML = cacheContent;
+          
+          // 重新初始化音乐播放器（如果存在）
+          if (typeof adjustMusicPlayer === 'function') {
+            setTimeout(adjustMusicPlayer, 100);
+          }
+        }
+      } else {
+        // 如果没有缓存，刷新当前页面
         autoRefreshContent(true);
       }
     });
     
-    // 之后每60秒检查一次
+    // 之后每60秒检查一次更新
     setInterval(() => autoRefreshContent(false), 60000);
   });
   
   // 用户离开当前页面时，设置刷新标志
   window.addEventListener('beforeunload', function() {
+    // 将当前页面标记为最后访问的页面
+    const currentUrl = pageCache.getKey(window.location.href);
+    sessionStorage.setItem('lastVisitedPage', currentUrl);
     sessionStorage.setItem('needsRefresh', 'true');
   });
 </script>
@@ -386,6 +691,67 @@ description: "「组一辈子乐队吧！」"
       if (contentContainer) {
         // 直接对容器应用样式，不添加任何新元素
         contentContainer.style.marginTop = '-2px'; // 微小的负边距消除空隙
+      }
+      
+      // 移动端滚动性能优化
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // 对页面添加平滑滚动样式
+        document.body.style.cssText += '-webkit-overflow-scrolling: touch;';
+        
+        // 设置主内容容器GPU加速
+        if (contentContainer) {
+          contentContainer.style.transform = 'translateZ(0)';
+          contentContainer.style.willChange = 'transform';
+        }
+        
+        // 减少移动端可能出现的闪烁问题
+        var styleElement = document.createElement('style');
+        styleElement.textContent = `
+          /* 移动端优化 */
+          body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          
+          /* 使用更高性能的动画属性 */
+          .post-preview, .pagination, .music-player-container {
+            will-change: transform;
+            transform: translateZ(0);
+          }
+          
+          /* 优化滚动容器 */
+          .main-content-container {
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+            overscroll-behavior-y: contain;
+          }
+          
+          /* 减少hover状态引起的重绘 */
+          @media (max-width: 767px) {
+            a:hover {
+              transition: none !important;
+            }
+            
+            /* 减少图形背景对移动端滚动性能的影响 */
+            #geometry-background {
+              will-change: transform;
+              transform: translateZ(0);
+              opacity: 0.8; /* 稍微降低透明度，减轻渲染压力 */
+            }
+          }
+        `;
+        document.head.appendChild(styleElement);
+        
+        // 优化过度滚动行为
+        document.documentElement.style.overscrollBehavior = 'none';
+        
+        // 处理触摸相关事件，防止意外的页面行为
+        document.addEventListener('touchmove', function(e) {
+          // 允许默认滚动行为，但避免其他意外的触摸行为
+          if (e.target.tagName === 'A' || e.target.closest('.post-preview')) {
+            e.stopPropagation(); // 阻止事件冒泡，但不阻止默认滚动
+          }
+        }, { passive: true });
       }
     }
   });

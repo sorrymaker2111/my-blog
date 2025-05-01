@@ -7,6 +7,7 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
     text-align: center;
+    margin: 0 auto; /* 确保居中 */
 }
 
 /* 光标闪烁效果 */
@@ -33,16 +34,35 @@ body.home-page header.intro-header {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden; /* 防止内容溢出 */
+    transform: translateZ(0); /* 硬件加速 */
 }
 
 body.home-page .site-heading {
     padding: 0 !important;
     text-align: center;
     width: 100%;
+    display: flex; /* 使用弹性布局对齐子元素 */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 标题容器样式 */
+.typewriter-container {
+    width: 100%;
+    max-width: 800px; /* 设置最大宽度 */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
 }
 
 /* 增强主页标题视觉效果 */
-body.home-page h1.typewriter-effect {
+body.home-page h1.typewriter-effect,
+body.home-page h1#typewriter-title {
     font-size: 60px;
     font-weight: 800;
     text-shadow: 0 3px 6px rgba(0,0,0,0.6);
@@ -52,13 +72,24 @@ body.home-page h1.typewriter-effect {
     text-align: center;
 }
 
-body.home-page .subheading.typewriter-effect {
+body.home-page .subheading.typewriter-effect,
+body.home-page span#typewriter-subtitle {
     font-size: 30px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     margin-top: 0;
     width: 100%;
     display: block;
     text-align: center;
+}
+
+/* 确保标题居中且宽度一致 */
+body.home-page #typewriter-title,
+body.home-page #typewriter-subtitle {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    display: inline-block;
 }
 
 /* 主页内容与全屏背景的分隔 */
@@ -82,17 +113,21 @@ h1.typewriter-effect {
 
 /* 移动设备适配 */
 @media only screen and (max-width: 767px) {
-    body.home-page h1.typewriter-effect {
+    body.home-page h1.typewriter-effect,
+    body.home-page h1#typewriter-title {
         font-size: 36px;
         line-height: 1.2;
         padding: 0 15px;
         margin-bottom: 15px;
+        word-break: break-word; /* 确保长词可以换行 */
     }
     
-    body.home-page .subheading.typewriter-effect {
+    body.home-page .subheading.typewriter-effect,
+    body.home-page span#typewriter-subtitle {
         font-size: 18px;
         line-height: 1.4;
         padding: 0 20px;
+        word-break: break-word;
     }
     
     h1.typewriter-effect {
@@ -114,5 +149,11 @@ h1.typewriter-effect {
     /* 调整打字机光标在移动端的显示 */
     .typewriter-effect .txt {
         border-right-width: 0.15rem;
+    }
+    
+    /* 移动端减小容器最大宽度 */
+    .typewriter-container {
+        max-width: 100%;
+        padding: 0 10px;
     }
 } 

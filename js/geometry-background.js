@@ -565,29 +565,43 @@ function initGeometryBackground() {
       targetMouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
       targetMouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
       touchEnabled = true; // 启用触摸模式
-      event.preventDefault(); // 防止页面滚动
     }
-  }, { passive: false });
+  }, { passive: true }); // 使用 passive: true 提高滚动性能
 
-  // 动画循环
-  function animate() {
+  // 动画循环和性能优化
+  let lastFrameTime = 0;
+  const FPS_LIMIT = isMobileDevice() ? 30 : 60; // 移动设备限制FPS
+  const FRAME_THRESHOLD = 1000 / FPS_LIMIT;
+  
+  function animate(currentTime) {
     requestAnimationFrame(animate);
     
+    // 限制帧率以提高性能
+    if (currentTime - lastFrameTime < FRAME_THRESHOLD) {
+      return; // 跳过这一帧
+    }
+    lastFrameTime = currentTime;
+    
+    // 如果页面不可见，则暂停动画更新
+    if (document.hidden) {
+      return;
+    }
+    
     // 平滑过渡到目标鼠标位置，触摸设备上响应速度更慢
-    const smoothFactor = touchEnabled || isMobileDevice() ? 0.02 : 0.05;
+    const smoothFactor = touchEnabled || isMobileDevice() ? 0.01 : 0.05; // 降低移动端更新频率
     mouseX += (targetMouseX - mouseX) * smoothFactor;
     mouseY += (targetMouseY - mouseY) * smoothFactor;
     
     // 根据鼠标位置调整图形组的位置，实现跟随效果
     // 限制移动范围，确保不会越过中心区域
-    const maxMove = window.innerWidth * (isMobileDevice() ? 0.01 : 0.03); // 移动设备上移动距离更小
-
+    const maxMove = window.innerWidth * (isMobileDevice() ? 0.005 : 0.03); // 移动设备上进一步减小移动距离
+    
     // 使用更简单的方法计算移动距离
     // 当鼠标在页面左侧时，限制右侧图形向左移动
     // 当鼠标在页面右侧时，限制左侧图形向右移动
     
     // 在移动设备上减少动画效果，提高性能
-    const moveFactor = isMobileDevice() ? 0.15 : 0.3;
+    const moveFactor = isMobileDevice() ? 0.05 : 0.3; // 降低移动设备上的移动系数
     
     // 左侧图形组的移动 - 仅在鼠标在页面右侧(mouseX>0)时限制向右移动
     let leftMoveX = -mouseX * maxMove;
@@ -604,7 +618,7 @@ function initGeometryBackground() {
     }
     
     // 垂直移动幅度在移动设备上更小
-    const verticalMoveFactor = isMobileDevice() ? 0.01 : 0.02;
+    const verticalMoveFactor = isMobileDevice() ? 0.005 : 0.02; // 减小垂直移动系数
     
     // 应用计算后的移动
     leftShapes.position.x = leftMoveX;
@@ -616,6 +630,14 @@ function initGeometryBackground() {
     renderer.render(scene, camera);
   }
 
+  // 检测页面可见性变化
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && isMobileDevice()) {
+      // 页面恢复可见时重置动画状态
+      lastFrameTime = 0;
+    }
+  });
+
   // 开始动画
-  animate();
+  animate(0);
 } 

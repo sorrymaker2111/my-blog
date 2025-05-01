@@ -3,6 +3,9 @@
     display: inline-block;
     color: #fff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    max-width: 90%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 /* 光标闪烁效果 */
@@ -71,18 +74,36 @@ h1.typewriter-effect {
 /* 移动设备适配 */
 @media only screen and (max-width: 767px) {
     body.home-page h1.typewriter-effect {
-        font-size: 40px;
+        font-size: 36px;
+        line-height: 1.2;
+        padding: 0 15px;
+        margin-bottom: 15px;
     }
     
     body.home-page .subheading.typewriter-effect {
-        font-size: 22px;
+        font-size: 18px;
+        line-height: 1.4;
+        padding: 0 20px;
     }
     
     h1.typewriter-effect {
         font-size: 28px;
+        padding: 0 10px;
     }
     
     .subheading.typewriter-effect {
         font-size: 18px;
+        padding: 0 15px;
+    }
+    
+    /* 确保文本在移动端不会溢出 */
+    .typewriter-effect {
+        max-width: 95%;
+        word-break: break-word;
+    }
+    
+    /* 调整打字机光标在移动端的显示 */
+    .typewriter-effect .txt {
+        border-right-width: 0.15rem;
     }
 } 

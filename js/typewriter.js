@@ -130,18 +130,39 @@ class SyncedTypeWriter {
     }
 }
 
-// 调整主页滚动行为
+// 检测设备类型
+function isMobileDevice() {
+    return (window.innerWidth <= 767) || 
+        (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+}
+
+// 调整主页滚动行为和移动设备适配
 function setupHomePage() {
     // 如果是主页
     if (document.body.classList.contains('home-page')) {
+        // 获取标题元素
+        const titleElement = document.getElementById('typewriter-title');
+        const subtitleElement = document.getElementById('typewriter-subtitle');
+        
+        // 移动设备适配
+        if (isMobileDevice()) {
+            // 为移动设备设置特定样式
+            document.body.classList.add('mobile-device');
+            
+            // 如果标题文本过长，可以为移动设备设置更短的文本版本
+            if (titleElement && titleElement.getAttribute('data-text').length > 15) {
+                // 获取更短的移动版本文本，如果有设置的话
+                const mobileTitleText = titleElement.getAttribute('data-mobile-text');
+                if (mobileTitleText) {
+                    titleElement.setAttribute('data-text', mobileTitleText);
+                }
+            }
+        }
+        
         // 添加滚动事件监听
         window.addEventListener('scroll', function() {
             // 获取滚动位置
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // 标题元素
-            const titleElement = document.getElementById('typewriter-title');
-            const subtitleElement = document.getElementById('typewriter-subtitle');
             
             if (titleElement && subtitleElement) {
                 // 根据滚动位置调整透明度，创建视差效果
@@ -154,6 +175,20 @@ function setupHomePage() {
                     
                     titleElement.style.transform = `translateY(${translateY}px)`;
                     subtitleElement.style.transform = `translateY(${translateY}px)`;
+                }
+            }
+        });
+        
+        // 监听窗口大小变化，动态调整布局
+        window.addEventListener('resize', function() {
+            if (titleElement && subtitleElement) {
+                // 如果是移动设备但没有添加标记
+                if (isMobileDevice() && !document.body.classList.contains('mobile-device')) {
+                    document.body.classList.add('mobile-device');
+                } 
+                // 如果不是移动设备但有标记
+                else if (!isMobileDevice() && document.body.classList.contains('mobile-device')) {
+                    document.body.classList.remove('mobile-device');
                 }
             }
         });
@@ -171,13 +206,23 @@ function initTypeWriter() {
         const titleText = titleElement.getAttribute('data-text');
         const subtitleText = subtitleElement.getAttribute('data-text');
         
-        // 文本集
-        const textSets = [
+        // 文本集 - 根据设备类型可能有不同的展示方式
+        let textSets = [
             [titleText, subtitleText],
             ["MyGO!!!!!", "「组一辈子乐队吧！」"],
             ["欧内该", "「你还真是高高在上呢」"],
             ["为什么要演奏春日影", "「软弱的我已经死了」"]
         ];
+        
+        // 在移动设备上可以选择使用更简短的文本
+        if (isMobileDevice()) {
+            textSets = [
+                [titleText, subtitleText],
+                ["MyGO!!", "「组乐队吧」"],
+                ["欧内该", "「高高在上」"],
+                ["春日影", "「软弱已死」"]
+            ];
+        }
         
         // 创建同步打字机
         new SyncedTypeWriter([titleElement, subtitleElement], textSets, 2000);
@@ -200,13 +245,13 @@ function initTypeWriter() {
                 "「你还真是高高在上呢」",
                 "「软弱的我已经死了」"
             ];
-            new TypeWriter(subtitleElement, subtitleVariations, 1500);
+            new TypeWriter(subtitleElement, subtitleVariations, 2000);
         }
     }
-    
-    // 设置主页滚动效果
-    setupHomePage();
 }
 
-// 页面加载后初始化
-document.addEventListener('DOMContentLoaded', initTypeWriter); 
+// 在DOM加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    setupHomePage();
+    initTypeWriter();
+}); 

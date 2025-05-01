@@ -3,6 +3,12 @@
  * 实现鼠标移动时的视差效果
  */
 
+// 检测是否为移动设备
+function isMobileDevice() {
+  return (window.innerWidth <= 767) || 
+    (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+}
+
 // 等待页面加载完成
 document.addEventListener('DOMContentLoaded', function() {
   // 添加Three.js库
@@ -46,7 +52,7 @@ function initGeometryBackground() {
   let headerHeight = headerElement ? headerElement.offsetHeight : 0;
   
   // 计算安全区域（内容区域两侧的边距）
-  const safeMargin = 50; // 内容两侧额外的安全间距
+  const safeMargin = isMobileDevice() ? 10 : 50; // 移动设备使用更小的边距
   const contentLeft = contentRect.left - safeMargin;
   const contentRight = contentRect.right + safeMargin;
 
@@ -65,34 +71,46 @@ function initGeometryBackground() {
   contentBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.1)'; // 右边框
   document.body.insertBefore(contentBg, container.nextSibling);
 
-  // 创建侧边栏背景矩形
-  const sidebarBg = document.createElement('div');
-  sidebarBg.id = 'sidebar-background';
-  sidebarBg.style.position = 'fixed';
-  sidebarBg.style.top = '0';
-  sidebarBg.style.left = (contentRight + 20) + 'px'; // 在内容区域右侧20px处
-  sidebarBg.style.width = '280px'; // 固定宽度
-  sidebarBg.style.height = '100%';
-  sidebarBg.style.backgroundColor = 'rgba(230, 240, 250, 0.1)'; // 与内容区域背景相同
-  sidebarBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1)';
-  sidebarBg.style.zIndex = '-1';
-  sidebarBg.style.borderLeft = '1px solid rgba(150, 180, 220, 0.1)';
-  sidebarBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.1)';
-  sidebarBg.style.border = '1px solid rgba(150, 180, 220, 0.15)';
-  document.body.insertBefore(sidebarBg, contentBg.nextSibling);
+  // 创建侧边栏背景矩形 (在移动设备上不显示)
+  if (!isMobileDevice()) {
+    const sidebarBg = document.createElement('div');
+    sidebarBg.id = 'sidebar-background';
+    sidebarBg.style.position = 'fixed';
+    sidebarBg.style.top = '0';
+    sidebarBg.style.left = (contentRight + 20) + 'px'; // 在内容区域右侧20px处
+    sidebarBg.style.width = '280px'; // 固定宽度
+    sidebarBg.style.height = '100%';
+    sidebarBg.style.backgroundColor = 'rgba(230, 240, 250, 0.1)'; // 与内容区域背景相同
+    sidebarBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1)';
+    sidebarBg.style.zIndex = '-1';
+    sidebarBg.style.borderLeft = '1px solid rgba(150, 180, 220, 0.1)';
+    sidebarBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.1)';
+    sidebarBg.style.border = '1px solid rgba(150, 180, 220, 0.15)';
+    document.body.insertBefore(sidebarBg, contentBg.nextSibling);
+  }
 
   // 处理窗口大小变化时更新内容背景
   function updateContentBackground() {
     if (contentElement) {
       contentRect = contentElement.getBoundingClientRect();
-      const updatedContentLeft = contentRect.left - safeMargin;
-      const updatedContentRight = contentRect.right + safeMargin;
+      const isMobile = isMobileDevice();
+      const updatedSafeMargin = isMobile ? 10 : 50;
+      const updatedContentLeft = contentRect.left - updatedSafeMargin;
+      const updatedContentRight = contentRect.right + updatedSafeMargin;
       
       contentBg.style.left = updatedContentLeft + 'px';
       contentBg.style.width = (updatedContentRight - updatedContentLeft) + 'px';
       
-      // 更新侧边栏背景位置
-      sidebarBg.style.left = (updatedContentRight + 20) + 'px';
+      // 更新侧边栏背景位置（如果存在）
+      const sidebarBg = document.getElementById('sidebar-background');
+      if (sidebarBg) {
+        if (isMobile) {
+          sidebarBg.style.display = 'none';
+        } else {
+          sidebarBg.style.display = 'block';
+          sidebarBg.style.left = (updatedContentRight + 20) + 'px';
+        }
+      }
     }
   }
 
@@ -117,6 +135,7 @@ function initGeometryBackground() {
   let mouseY = 0;
   let targetMouseX = 0;
   let targetMouseY = 0;
+  let touchEnabled = false; // 是否支持触摸事件
 
   // 创建几何图形组
   let leftShapes = new THREE.Group();
@@ -128,7 +147,7 @@ function initGeometryBackground() {
   const material = new THREE.LineBasicMaterial({ 
     color: 0x666666, // 更深的灰色 (由0x808080改为0x666666)
     transparent: true,
-    opacity: 0.2     // 降低不透明度 (由0.25改为0.2)
+    opacity: isMobileDevice() ? 0.15 : 0.2 // 移动设备上降低不透明度
   });
 
   // 创建2D几何图形的函数
@@ -371,12 +390,14 @@ function initGeometryBackground() {
 
   // 创建左侧几何图形
   function createLeftShapes() {
-    const shapeCount = 50; // 数量减半为50个
+    // 移动设备上减少图形数量
+    const shapeCount = isMobileDevice() ? 20 : 50;
     const viewWidth = window.innerWidth;
     const viewHeight = window.innerHeight;
-    const maxSize = Math.min(viewWidth, viewHeight) * 0.04; // 小尺寸，视窗的4%
+    const maxSize = Math.min(viewWidth, viewHeight) * (isMobileDevice() ? 0.03 : 0.04); // 移动设备上图形更小
     
-    // 计算左侧区域宽度，添加额外的边距防止越界
+    // 计算左侧区域的宽度，考虑内容区域的位置
+    // 添加额外的安全边距防止图形越界
     const safetyMargin = maxSize * 2; // 安全边距为最大图形尺寸的2倍
     const leftAreaWidth = Math.max(0, contentLeft - safetyMargin);
     
@@ -384,8 +405,8 @@ function initGeometryBackground() {
     const adjustedShapeCount = leftAreaWidth < 100 ? Math.floor(shapeCount / 2) : shapeCount;
     
     // 为了均匀分布，我们将空间划分为网格
-    const gridCols = 5; // 水平方向划分为5列
-    const gridRows = 10; // 垂直方向划分为10行
+    const gridCols = isMobileDevice() ? 3 : 5; // 移动设备减少列数
+    const gridRows = isMobileDevice() ? 7 : 10; // 移动设备减少行数
     
     const cellWidth = leftAreaWidth / gridCols;
     const cellHeight = viewHeight / gridRows;
@@ -425,10 +446,11 @@ function initGeometryBackground() {
 
   // 创建右侧几何图形
   function createRightShapes() {
-    const shapeCount = 50; // 数量减半为50个
+    // 移动设备上减少图形数量
+    const shapeCount = isMobileDevice() ? 20 : 50;
     const viewWidth = window.innerWidth;
     const viewHeight = window.innerHeight;
-    const maxSize = Math.min(viewWidth, viewHeight) * 0.04; // 小尺寸，视窗的4%
+    const maxSize = Math.min(viewWidth, viewHeight) * (isMobileDevice() ? 0.03 : 0.04); // 移动设备上图形更小
     
     // 计算右侧区域开始位置和宽度，添加额外的边距防止越界
     const safetyMargin = maxSize * 2; // 安全边距为最大图形尺寸的2倍
@@ -439,8 +461,8 @@ function initGeometryBackground() {
     const adjustedShapeCount = rightAreaWidth < 100 ? Math.floor(shapeCount / 2) : shapeCount;
     
     // 为了均匀分布，我们将空间划分为网格
-    const gridCols = 5; // 水平方向划分为5列
-    const gridRows = 10; // 垂直方向划分为10行
+    const gridCols = isMobileDevice() ? 3 : 5; // 移动设备减少列数
+    const gridRows = isMobileDevice() ? 7 : 10; // 移动设备减少行数
     
     const cellWidth = rightAreaWidth / gridCols;
     const cellHeight = viewHeight / gridRows;
@@ -504,8 +526,9 @@ function initGeometryBackground() {
       contentRect = contentElement.getBoundingClientRect();
       
       // 更新安全区域
-      const contentLeft = contentRect.left - safeMargin;
-      const contentRight = contentRect.right + safeMargin;
+      const currentSafeMargin = isMobileDevice() ? 10 : 50;
+      const contentLeft = contentRect.left - currentSafeMargin;
+      const contentRight = contentRect.right + currentSafeMargin;
     }
 
     // 更新内容背景
@@ -532,73 +555,66 @@ function initGeometryBackground() {
     // 计算鼠标位置在 -1 到 1 之间的标准化坐标
     targetMouseX = (event.clientX / window.innerWidth) * 2 - 1;
     targetMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    touchEnabled = false; // 使用鼠标时禁用触摸模式
   });
+  
+  // 监听触摸移动（移动设备）
+  document.addEventListener('touchmove', function(event) {
+    if (event.touches.length > 0) {
+      // 计算触摸位置在 -1 到 1 之间的标准化坐标
+      targetMouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+      targetMouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+      touchEnabled = true; // 启用触摸模式
+      event.preventDefault(); // 防止页面滚动
+    }
+  }, { passive: false });
 
   // 动画循环
   function animate() {
     requestAnimationFrame(animate);
     
-    // 平滑过渡到目标鼠标位置
-    mouseX += (targetMouseX - mouseX) * 0.05;
-    mouseY += (targetMouseY - mouseY) * 0.05;
+    // 平滑过渡到目标鼠标位置，触摸设备上响应速度更慢
+    const smoothFactor = touchEnabled || isMobileDevice() ? 0.02 : 0.05;
+    mouseX += (targetMouseX - mouseX) * smoothFactor;
+    mouseY += (targetMouseY - mouseY) * smoothFactor;
     
     // 根据鼠标位置调整图形组的位置，实现跟随效果
     // 限制移动范围，确保不会越过中心区域
-    const maxMove = window.innerWidth * 0.03; // 最大移动距离
+    const maxMove = window.innerWidth * (isMobileDevice() ? 0.01 : 0.03); // 移动设备上移动距离更小
 
     // 使用更简单的方法计算移动距离
     // 当鼠标在页面左侧时，限制右侧图形向左移动
     // 当鼠标在页面右侧时，限制左侧图形向右移动
     
+    // 在移动设备上减少动画效果，提高性能
+    const moveFactor = isMobileDevice() ? 0.15 : 0.3;
+    
     // 左侧图形组的移动 - 仅在鼠标在页面右侧(mouseX>0)时限制向右移动
     let leftMoveX = -mouseX * maxMove;
     if (mouseX < 0) {
-      // 向右移动幅度降低到原来的30%，减少移动到内容区域的可能性
-      leftMoveX = -mouseX * maxMove * 0.3;
+      // 向右移动幅度降低，减少移动到内容区域的可能性
+      leftMoveX = -mouseX * maxMove * moveFactor;
     }
     
     // 右侧图形组的移动 - 仅在鼠标在页面左侧(mouseX<0)时限制向左移动
     let rightMoveX = -mouseX * maxMove;
     if (mouseX > 0) {
-      // 向左移动幅度降低到原来的30%，减少移动到内容区域的可能性
-      rightMoveX = -mouseX * maxMove * 0.3;
+      // 向左移动幅度降低，减少移动到内容区域的可能性
+      rightMoveX = -mouseX * maxMove * moveFactor;
     }
+    
+    // 垂直移动幅度在移动设备上更小
+    const verticalMoveFactor = isMobileDevice() ? 0.01 : 0.02;
     
     // 应用计算后的移动
     leftShapes.position.x = leftMoveX;
-    leftShapes.position.y = -mouseY * window.innerHeight * 0.02;
+    leftShapes.position.y = -mouseY * window.innerHeight * verticalMoveFactor;
     
     rightShapes.position.x = rightMoveX;
-    rightShapes.position.y = -mouseY * window.innerHeight * 0.02;
+    rightShapes.position.y = -mouseY * window.innerHeight * verticalMoveFactor;
     
     renderer.render(scene, camera);
   }
-
-  // 添加调试辅助函数
-  function drawDebugSafeArea() {
-    // 创建一个表示内容安全区域的线框
-    const safeAreaGeometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-      contentLeft - window.innerWidth/2, -window.innerHeight/2, 0,
-      contentLeft - window.innerWidth/2, window.innerHeight/2, 0,
-      contentRight - window.innerWidth/2, window.innerHeight/2, 0,
-      contentRight - window.innerWidth/2, -window.innerHeight/2, 0,
-      contentLeft - window.innerWidth/2, -window.innerHeight/2, 0
-    ]);
-    safeAreaGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    
-    const safeAreaMaterial = new THREE.LineBasicMaterial({
-      color: 0xff0000,
-      transparent: true,
-      opacity: 0.5
-    });
-    
-    const safeAreaLine = new THREE.Line(safeAreaGeometry, safeAreaMaterial);
-    scene.add(safeAreaLine);
-  }
-  
-  // 如果需要调试，取消下面一行的注释
-  // drawDebugSafeArea();
 
   // 开始动画
   animate();

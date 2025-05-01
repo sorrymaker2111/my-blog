@@ -6,8 +6,28 @@ description: "「组一辈子乐队吧！」"
 <!-- 添加几何图形背景CSS -->
 <link rel="stylesheet" href="{{ '/css/geometry-background.css' | prepend: site.baseurl }}">
 
+<!-- 自动刷新内容设置 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 <!-- 添加分页导航样式 -->
 <style>
+    /* 主页内容的容器 */
+    .main-content-container {
+        background-color: #fff;
+        padding-top: 30px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* 为了让主页全屏效果更好的样式 */
+    .home-spacer {
+        height: 0; /* 原来是100vh，改为0，去除空白 */
+        width: 100%;
+        display: none; /* 隐藏占位符 */
+    }
+    
     .pagination {
         display: flex;
         justify-content: center;
@@ -84,153 +104,216 @@ description: "「组一辈子乐队吧！」"
     }
 </style>
 
-<div class="music-player-title">
-    <h4>我喜欢的歌单</h4>
-</div>
-
-<div class="music-player-container">
-    <div id="musicPlayerWrapper" class="music-player-wrapper pc">
-        <iframe id="musicPlayerIframe" frameborder="no" border="0" marginwidth="0" marginheight="0" 
-            class="music-player-iframe" 
-            src="https://music.163.com/outchain/player?type=0&id=13052360489&auto=0&height=430"></iframe>
+<!-- 主页内容容器 - 不再需要全屏占位符 -->
+<div class="main-content-container">
+    {% if paginator.page == 1 %}
+    <div class="music-player-title">
+        <h4>我喜欢的歌单</h4>
     </div>
-</div>
 
-<script>
-    // 检测设备类型
-    function isMobileDevice() {
-        return (window.innerWidth <= 768) || 
-               (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-    }
-    
-    // 调整播放器
-    function adjustMusicPlayer() {
-        var wrapper = document.getElementById('musicPlayerWrapper');
-        var iframe = document.getElementById('musicPlayerIframe');
-        
-        if (isMobileDevice()) {
-            wrapper.className = 'music-player-wrapper mobile';
-            // 移动端使用/m/前缀的播放器
-            if (iframe.src.indexOf('/m/outchain') === -1) {
-                iframe.src = iframe.src.replace('/outchain', '/m/outchain');
-            }
-        } else {
-            wrapper.className = 'music-player-wrapper pc';
-            // PC端使用普通播放器
-            iframe.src = iframe.src.replace('/m/outchain', '/outchain');
-        }
-    }
-    
-    // 页面加载和窗口大小改变时调整
-    window.addEventListener('load', adjustMusicPlayer);
-    window.addEventListener('resize', adjustMusicPlayer);
-</script>
-
-<!-- 页面信息 -->
-<div class="page-count">
-    {% if paginator.total_posts > 0 %}
-    显示第 {{ paginator.page }}页 / 共{{ paginator.total_pages }}页 (总共{{ paginator.total_posts }}篇文章)
-    {% endif %}
-</div>
-
-{% for post in paginator.posts %}
-<div class="post-preview">
-    <a href="{{ post.url | prepend: site.baseurl }}">
-        <h2 class="post-title">
-            {{ post.title }}
-        </h2>
-        {% if post.subtitle %}
-        <h3 class="post-subtitle">
-            {{ post.subtitle }}
-        </h3>
-        {% endif %}
-        <div class="post-content-preview">
-            {% if post.lang == 'en' %}
-                {{ post.content | strip_html | truncate:300 }}
-            {% else %}
-                {{ post.content | strip_html | truncate:200 }}
-            {% endif %}
+    <div class="music-player-container">
+        <div id="musicPlayerWrapper" class="music-player-wrapper pc">
+            <iframe id="musicPlayerIframe" frameborder="no" border="0" marginwidth="0" marginheight="0" 
+                class="music-player-iframe" 
+                src="https://music.163.com/outchain/player?type=0&id=13052360489&auto=0&height=430"></iframe>
         </div>
-    </a>
-    <p class="post-meta">
-        Posted by {% if post.author %}{{ post.author }}{% else %}{{ site.title }}{% endif %} on {{ post.date | date: "%B %-d, %Y" }}
-    </p>
-</div>
-<hr>
-{% endfor %}
+    </div>
 
-<!-- 增强的分页导航 -->
-{% if paginator.total_pages > 1 %}
-<ul class="pagination">
-    <!-- 首页链接 -->
-    <li {% if paginator.page == 1 %}class="disabled"{% endif %}>
-        {% if paginator.page == 1 %}
-        <span>&laquo;&laquo;</span>
-        {% else %}
-        <a href="{{ '/index.html' | prepend: site.baseurl }}">&laquo;&laquo;</a>
-        {% endif %}
-    </li>
-
-    <!-- 上一页链接 -->
-    <li {% if paginator.previous_page == nil %}class="disabled"{% endif %}>
-        {% if paginator.previous_page %}
-        <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&laquo;</a>
-        {% else %}
-        <span>&laquo;</span>
-        {% endif %}
-    </li>
-
-    <!-- 页码链接 -->
-    {% assign start_page = paginator.page | minus: 2 %}
-    {% if start_page < 1 %}
-        {% assign start_page = 1 %}
+    <script>
+        // 检测设备类型
+        function isMobileDevice() {
+            return (window.innerWidth <= 768) || 
+                (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        }
+        
+        // 调整播放器
+        function adjustMusicPlayer() {
+            var wrapper = document.getElementById('musicPlayerWrapper');
+            var iframe = document.getElementById('musicPlayerIframe');
+            
+            if (isMobileDevice()) {
+                wrapper.className = 'music-player-wrapper mobile';
+                // 移动端使用/m/前缀的播放器
+                if (iframe.src.indexOf('/m/outchain') === -1) {
+                    iframe.src = iframe.src.replace('/outchain', '/m/outchain');
+                }
+            } else {
+                wrapper.className = 'music-player-wrapper pc';
+                // PC端使用普通播放器
+                iframe.src = iframe.src.replace('/m/outchain', '/outchain');
+            }
+        }
+        
+        // 页面加载和窗口大小改变时调整
+        window.addEventListener('load', adjustMusicPlayer);
+        window.addEventListener('resize', adjustMusicPlayer);
+    </script>
     {% endif %}
-    
-    {% assign end_page = start_page | plus: 4 %}
-    {% if end_page > paginator.total_pages %}
-        {% assign end_page = paginator.total_pages %}
-        {% assign start_page = end_page | minus: 4 %}
+
+    <!-- 页面信息 -->
+    <div class="page-count">
+        {% if paginator.total_posts > 0 %}
+        显示第 {{ paginator.page }}页 / 共{{ paginator.total_pages }}页 (总共{{ paginator.total_posts }}篇文章)
+        {% endif %}
+    </div>
+
+    {% for post in paginator.posts %}
+    <div class="post-preview">
+        <a href="{{ post.url | prepend: site.baseurl }}">
+            <h2 class="post-title">
+                {{ post.title }}
+            </h2>
+            {% if post.subtitle %}
+            <h3 class="post-subtitle">
+                {{ post.subtitle }}
+            </h3>
+            {% endif %}
+            <div class="post-content-preview">
+                {% if post.lang == 'en' %}
+                    {{ post.content | strip_html | truncate:300 }}
+                {% else %}
+                    {{ post.content | strip_html | truncate:200 }}
+                {% endif %}
+            </div>
+        </a>
+        <p class="post-meta">
+            Posted by {% if post.author %}{{ post.author }}{% else %}{{ site.title }}{% endif %} on {{ post.date | date: "%B %-d, %Y" }}
+        </p>
+    </div>
+    <hr>
+    {% endfor %}
+
+    <!-- 增强的分页导航 -->
+    {% if paginator.total_pages > 1 %}
+    <ul class="pagination">
+        <!-- 首页链接 -->
+        <li {% if paginator.page == 1 %}class="disabled"{% endif %}>
+            {% if paginator.page == 1 %}
+            <span>&laquo;&laquo;</span>
+            {% else %}
+            <a href="{{ '/index.html' | prepend: site.baseurl }}">&laquo;&laquo;</a>
+            {% endif %}
+        </li>
+
+        <!-- 上一页链接 -->
+        <li {% if paginator.previous_page == nil %}class="disabled"{% endif %}>
+            {% if paginator.previous_page %}
+            <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&laquo;</a>
+            {% else %}
+            <span>&laquo;</span>
+            {% endif %}
+        </li>
+
+        <!-- 页码链接 -->
+        {% assign start_page = paginator.page | minus: 2 %}
         {% if start_page < 1 %}
             {% assign start_page = 1 %}
         {% endif %}
-    {% endif %}
-    
-    {% for page in (start_page..end_page) %}
-        <li {% if page == paginator.page %}class="active"{% endif %}>
-            {% if page == paginator.page %}
-            <span>{{ page }}</span>
-            {% else %}
-                {% if page == 1 %}
-                <a href="{{ '/index.html' | prepend: site.baseurl }}">{{ page }}</a>
+        
+        {% assign end_page = start_page | plus: 4 %}
+        {% if end_page > paginator.total_pages %}
+            {% assign end_page = paginator.total_pages %}
+            {% assign start_page = end_page | minus: 4 %}
+            {% if start_page < 1 %}
+                {% assign start_page = 1 %}
+            {% endif %}
+        {% endif %}
+        
+        {% for page in (start_page..end_page) %}
+            <li {% if page == paginator.page %}class="active"{% endif %}>
+                {% if page == paginator.page %}
+                <span>{{ page }}</span>
                 {% else %}
-                <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}">{{ page }}</a>
+                    {% if page == 1 %}
+                    <a href="{{ '/index.html' | prepend: site.baseurl }}">{{ page }}</a>
+                    {% else %}
+                    <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}">{{ page }}</a>
+                    {% endif %}
                 {% endif %}
+            </li>
+        {% endfor %}
+
+        <!-- 下一页链接 -->
+        <li {% if paginator.next_page == nil %}class="disabled"{% endif %}>
+            {% if paginator.next_page %}
+            <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">&raquo;</a>
+            {% else %}
+            <span>&raquo;</span>
             {% endif %}
         </li>
-    {% endfor %}
 
-    <!-- 下一页链接 -->
-    <li {% if paginator.next_page == nil %}class="disabled"{% endif %}>
-        {% if paginator.next_page %}
-        <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">&raquo;</a>
-        {% else %}
-        <span>&raquo;</span>
-        {% endif %}
-    </li>
-
-    <!-- 末页链接 -->
-    <li {% if paginator.page == paginator.total_pages %}class="disabled"{% endif %}>
-        {% if paginator.page == paginator.total_pages %}
-        <span>&raquo;&raquo;</span>
-        {% else %}
-        <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', paginator.total_pages }}">&raquo;&raquo;</a>
-        {% endif %}
-    </li>
-</ul>
-{% endif %}
+        <!-- 末页链接 -->
+        <li {% if paginator.page == paginator.total_pages %}class="disabled"{% endif %}>
+            {% if paginator.page == paginator.total_pages %}
+            <span>&raquo;&raquo;</span>
+            {% else %}
+            <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', paginator.total_pages }}">&raquo;&raquo;</a>
+            {% endif %}
+        </li>
+    </ul>
+    {% endif %}
+</div>
 
 <!-- 添加几何图形背景脚本 -->
 <script src="{{ '/js/geometry-background.js' | prepend: site.baseurl }}"></script>
 <!-- 51la统计 -->
 <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
 <script>LA.init({id:"3M1p9Hhnk53mxLF7",ck:"3M1p9Hhnk53mxLF7"})</script>
+
+<!-- 自动更新内容脚本 -->
+<script>
+  // 自动刷新页面内容
+  function autoRefreshContent() {
+    // 检查是否有新内容可用
+    fetch(window.location.href, {
+      cache: 'no-store',
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(response => response.text())
+    .then(html => {
+      // 解析返回的HTML
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      
+      // 更新文章列表部分
+      const newPosts = doc.querySelector('.main-content-container');
+      const currentPosts = document.querySelector('.main-content-container');
+      
+      if (newPosts && currentPosts) {
+        // 检查内容是否真的有变化
+        if (newPosts.innerHTML !== currentPosts.innerHTML) {
+          // 只更新内容部分，不重载整个页面
+          currentPosts.innerHTML = newPosts.innerHTML;
+          // 移除控制台日志，不显示更新提示
+        }
+      }
+    })
+    .catch(error => {
+      // 静默处理错误，不在控制台显示
+    });
+  }
+
+  // 页面加载完成后立即执行一次刷新，然后设置定期检查
+  document.addEventListener('DOMContentLoaded', function() {
+    // 立即执行一次刷新
+    autoRefreshContent();
+    
+    // 之后每60秒检查一次
+    setInterval(autoRefreshContent, 60000);
+  });
+</script>
+
+<!-- 简单脚本：减少主页内容与背景之间的空白 -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 我们仅在首页做这些调整
+    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+      // 确保内容容器直接跟随在背景图片后面
+      var contentContainer = document.querySelector('.main-content-container');
+      if (contentContainer) {
+        // 直接对容器应用样式，不添加任何新元素
+        contentContainer.style.marginTop = '-2px'; // 微小的负边距消除空隙
+      }
+    }
+  });
+</script>

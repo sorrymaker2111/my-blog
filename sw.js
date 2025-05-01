@@ -192,7 +192,7 @@ self.addEventListener('fetch', event => {
     // Call respondWith() with whatever we get first.
     // Promise.race() resolves with first one settled (even rejected)
     // If the fetch fails (e.g disconnected), wait for the cache.
-    // If there’s nothing in cache, wait for the fetch.
+    // If there's nothing in cache, wait for the fetch.
     // If neither yields a response, return offline pages.
     event.respondWith(
       Promise.race([fetched.catch(_ => cached), cached])
@@ -258,10 +258,14 @@ function revalidateContent(cachedResp, fetchedResp) {
       const fetchedVer = fetched.headers.get('last-modified')
       console.log(`"${cachedVer}" vs. "${fetchedVer}"`);
       if (cachedVer !== fetchedVer) {
-        sendMessageToClientsAsync({
-          'command': 'UPDATE_FOUND',
-          'url': fetched.url
-        })
+        // 静默刷新，不发送更新通知
+        // 注释掉原来的通知代码，避免显示提示
+        // sendMessageToClientsAsync({
+        //   'command': 'UPDATE_FOUND',
+        //   'url': fetched.url
+        // })
+        
+        // 如果需要，这里可以添加其他逻辑，但不显示提示
       }
     })
     .catch(err => console.log(err))

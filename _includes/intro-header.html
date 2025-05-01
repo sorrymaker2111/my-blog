@@ -20,6 +20,22 @@
     }
     {% endif %}
     
+    /* 主页全屏背景 */
+    body.home-page header.intro-header {
+        height: 100vh;
+        background-position: center center;
+        background-size: cover;
+    }
+    
+    body.home-page .intro-header .site-heading {
+        padding: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+    }
+    
     /* 打字机效果样式 */
     .typewriter-effect {
         display: inline-block;
@@ -131,6 +147,10 @@
             <span id="typewriter-subtitle" class="subheading typewriter-effect" data-text="{{ page.description }}"></span>
             <!-- 引入打字机效果脚本 -->
             <script src="{{ '/js/typewriter.js' | prepend: site.baseurl }}"></script>
+            <!-- 为首页添加特殊类名 -->
+            <script>
+              document.body.classList.add('home-page');
+            </script>
           {% else %}
             <!-- 其他页面使用静态文字 -->
             <h1>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</h1>

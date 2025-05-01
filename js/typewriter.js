@@ -130,6 +130,36 @@ class SyncedTypeWriter {
     }
 }
 
+// 调整主页滚动行为
+function setupHomePage() {
+    // 如果是主页
+    if (document.body.classList.contains('home-page')) {
+        // 添加滚动事件监听
+        window.addEventListener('scroll', function() {
+            // 获取滚动位置
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // 标题元素
+            const titleElement = document.getElementById('typewriter-title');
+            const subtitleElement = document.getElementById('typewriter-subtitle');
+            
+            if (titleElement && subtitleElement) {
+                // 根据滚动位置调整透明度，创建视差效果
+                if (scrollTop < window.innerHeight) {
+                    const opacity = 1 - (scrollTop / (window.innerHeight * 0.5));
+                    const translateY = scrollTop * 0.3; // 视差效果
+                    
+                    titleElement.style.opacity = Math.max(0, opacity);
+                    subtitleElement.style.opacity = Math.max(0, opacity);
+                    
+                    titleElement.style.transform = `translateY(${translateY}px)`;
+                    subtitleElement.style.transform = `translateY(${translateY}px)`;
+                }
+            }
+        });
+    }
+}
+
 // 初始化打字机效果
 function initTypeWriter() {
     // 获取元素
@@ -173,6 +203,9 @@ function initTypeWriter() {
             new TypeWriter(subtitleElement, subtitleVariations, 1500);
         }
     }
+    
+    // 设置主页滚动效果
+    setupHomePage();
 }
 
 // 页面加载后初始化

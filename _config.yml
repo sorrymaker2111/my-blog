@@ -1,9 +1,9 @@
 # Site settings
-title: sorrymaker Blog
+title: MyGO!!!!!
 SEOTitle: sorrymaker的博客 | sorrymaker Blog
-header-img: img/index_bg_1.jpg
+header-img: img/index_bg.png
 email: sorrymaker2111@gmail.com
-description: "这里是 @sorrymaker 的个人博客，与你一起发现更大的世界 | 要做一个有 swag 的程序员"
+description: "这里是 @sorrymaker 的个人博客，与你一起发现更大的世界 | 要做一个galgame高手程序员"
 keyword: "sorrymaker, java, springboot, Web, galgame, 柚子社, 千恋万花, sorrymaker随想录"
 url: "https://sorrymaker.top" # your host, for absolute URL
 baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'

@@ -1,0 +1,40 @@
+/* 打字机效果的样式 */
+.typewriter-effect {
+    display: inline-block;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* 光标闪烁效果 */
+.typewriter-effect .txt {
+    border-right: 0.2rem solid #fff;
+    animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #fff; }
+}
+
+/* 打字机标题样式 */
+h1.typewriter-effect {
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+/* 打字机副标题样式 */
+.subheading.typewriter-effect {
+    font-size: 22px;
+    margin-top: 0;
+}
+
+/* 移动设备适配 */
+@media only screen and (max-width: 767px) {
+    h1.typewriter-effect {
+        font-size: 28px;
+    }
+    
+    .subheading.typewriter-effect {
+        font-size: 18px;
+    }
+} 

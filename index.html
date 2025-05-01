@@ -352,6 +352,8 @@ description: "「组一辈子乐队吧！」"
     maxAge: 3600000, // 默认1小时
     // 移动端特殊标识
     isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+    // 记录已访问页面
+    visitedPages: {},
     
     // 获取缓存键
     getKey: function(url) {
@@ -450,6 +452,11 @@ description: "「组一辈子乐队吧！」"
   // 检查URL中是否有强制刷新参数
   function hasRefreshParam() {
     return window.location.href.indexOf('refresh=true') > -1;
+  }
+  
+  // 检查URL中是否有禁止刷新参数
+  function hasNoRefreshParam() {
+    return window.location.href.indexOf('no-refresh=true') > -1;
   }
   
   // 预加载页面内容
@@ -667,35 +674,52 @@ description: "「组一辈子乐队吧！」"
     links.forEach(link => {
       // 只处理内部链接
       if (link.href && (link.href.startsWith(domain) || link.href.startsWith(baseUrl) || link.href.startsWith('/'))) {
+        // 标记链接已处理，防止重复添加事件
+        if (link.getAttribute('data-enhanced') === 'true') {
+          return;
+        }
+        link.setAttribute('data-enhanced', 'true');
+        
         // 保存原始的点击事件
         const originalClick = link.onclick;
         
         // 添加新的点击事件处理
         link.onclick = function(e) {
-          // 设置会话存储，标记需要刷新
-          sessionStorage.setItem('lastClickUrl', pageCache.getKey(link.href));
+          const targetUrl = pageCache.getKey(link.href);
           
-          // 检查是否有缓存的内容
-          const cachedContent = pageCache.get(link.href);
-          if (cachedContent) {
-            // 如果是首页链接，可以应用缓存内容而不是跳转
-            if (link.href.indexOf('index.html') > -1 || 
-                link.href === domain + '/' || 
-                link.href === baseUrl + '/' || 
-                link.href === '/') {
-              e.preventDefault();
-              
-              // 应用缓存内容
-              const currentPosts = document.querySelector('.main-content-container');
-              if (currentPosts) {
+          // 记录链接URL
+          sessionStorage.setItem('lastClickUrl', targetUrl);
+          
+          // 检查是否已访问过该页面（有缓存）
+          const cachedContent = pageCache.get(targetUrl);
+          const isPageVisited = pageCache.visitedPages[targetUrl] === true;
+          const isInternalPageLink = link.href.indexOf('/page/') > -1 || 
+                                    link.href.indexOf('index.html') > -1 || 
+                                    link.href === domain + '/' || 
+                                    link.href === baseUrl + '/' || 
+                                    link.href === '/';
+          
+          // 如果有缓存并且是内部页面链接
+          if (cachedContent && isInternalPageLink) {
+            // 阻止默认行为
+            e.preventDefault();
+            
+            // 应用缓存内容
+            const currentPosts = document.querySelector('.main-content-container');
+            if (currentPosts) {
+              // 使用requestAnimationFrame优化DOM更新
+              requestAnimationFrame(() => {
                 currentPosts.innerHTML = cachedContent;
                 
                 // 更新URL但不刷新页面
                 if (window.history && window.history.pushState) {
-                  window.history.pushState({}, document.title, link.href);
+                  window.history.pushState({
+                    url: link.href,
+                    cached: true
+                  }, document.title, link.href);
                 }
                 
-                // 如果有音乐播放器，恢复而不是重新初始化
+                // 如果有音乐播放器，恢复状态
                 if (typeof restoreMusicPlayer === 'function') {
                   setTimeout(restoreMusicPlayer, 100);
                 } else if (typeof adjustMusicPlayer === 'function') {
@@ -705,17 +729,35 @@ description: "「组一辈子乐队吧！」"
                 // 滚动到顶部
                 window.scrollTo(0, 0);
                 
-                // 不继续执行原始点击事件
-                return false;
-              }
+                // 标记不需要刷新
+                sessionStorage.setItem('needsRefresh', 'false');
+                
+                // 记录已访问
+                pageCache.visitedPages[targetUrl] = true;
+                try {
+                  localStorage.setItem('visitedPages', JSON.stringify(pageCache.visitedPages));
+                } catch (e) {
+                  console.warn('无法保存访问历史', e);
+                }
+              });
             }
+            return false;
           }
           
-          // 如果没有缓存或不是首页，添加刷新参数
-          if (link.href.indexOf('refresh=true') === -1) {
-            // 确定正确的分隔符
+          // 对于已访问过的页面，禁止刷新参数
+          if (isPageVisited) {
+            // 移除refresh参数，确保使用缓存
+            let cleanHref = link.href.replace(/[?&]refresh=true/, '').replace(/[?&]t=\d+/, '');
+            
+            // 添加no-refresh标记
+            const separator = cleanHref.indexOf('?') > -1 ? '&' : '?';
+            link.href = cleanHref + separator + 'no-refresh=true';
+            
+            // 设置会话标志，表示不需要刷新
+            sessionStorage.setItem('needsRefresh', 'false');
+          } else if (link.href.indexOf('refresh=true') === -1 && link.href.indexOf('no-refresh=true') === -1) {
+            // 对于首次访问的页面，添加刷新参数
             const separator = link.href.indexOf('?') > -1 ? '&' : '?';
-            // 修改链接，添加刷新参数
             link.href = link.href + separator + 'refresh=true';
           }
           
@@ -734,9 +776,28 @@ description: "「组一辈子乐队吧！」"
     const isMobile = pageCache.isMobile;
     const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
     
+    // 尝试从localStorage恢复访问历史
+    try {
+      const visitedPagesJson = localStorage.getItem('visitedPages');
+      if (visitedPagesJson) {
+        pageCache.visitedPages = JSON.parse(visitedPagesJson);
+      }
+    } catch (e) {
+      console.warn('无法恢复访问历史', e);
+      pageCache.visitedPages = {};
+    }
+    
     // 检查本地缓存，确保首次加载能从缓存获取
     const currentUrl = pageCache.getKey(window.location.href);
     let cachedContent = pageCache.get(currentUrl);
+    
+    // 标记当前页面已访问
+    pageCache.visitedPages[currentUrl] = true;
+    try {
+      localStorage.setItem('visitedPages', JSON.stringify(pageCache.visitedPages));
+    } catch (e) {
+      console.warn('无法保存访问历史', e);
+    }
     
     // 如果找到有效缓存，立即使用它
     if (cachedContent) {
@@ -757,19 +818,31 @@ description: "「组一辈子乐队吧！」"
     }
     
     // 检查是否需要强制刷新（来自其他页面跳转）
-    const needsForceRefresh = hasRefreshParam() || sessionStorage.getItem('needsRefresh') === 'true';
+    const needsForceRefresh = hasRefreshParam() || (sessionStorage.getItem('needsRefresh') === 'true' && !hasNoRefreshParam());
     
     // 检查是否是从内部页面返回主页
     const isReturningToHomePage = isHomePage && 
                                  sessionStorage.getItem('lastVisitedPage') && 
                                  sessionStorage.getItem('homePageCacheApplied') === 'true';
     
-    // 只有在不是返回主页的情况下才执行刷新
-    if (!isReturningToHomePage) {
+    // 检查是否是已访问过的页面
+    const isVisitedPage = pageCache.visitedPages[currentUrl] === true && !hasRefreshParam();
+    
+    // 只有在需要刷新的情况下才执行刷新
+    if (!isReturningToHomePage && !isVisitedPage) {
       // 执行刷新
       autoRefreshContent(needsForceRefresh);
     } else {
-      console.log('从内部页面返回主页，使用缓存内容');
+      console.log('使用缓存内容，不刷新');
+      
+      // 从URL中移除刷新参数
+      if ((hasRefreshParam() || hasNoRefreshParam()) && window.history && window.history.replaceState) {
+        const cleanUrl = window.location.href
+          .replace(/[?&]refresh=true/, '')
+          .replace(/[?&]no-refresh=true/, '')
+          .replace(/[?&]t=\d+/, '');
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
     }
     
     // 重置刷新标志
@@ -794,11 +867,15 @@ description: "「组一辈子乐队吧！」"
     
     // 监听浏览器前进/后退事件
     window.addEventListener('popstate', function(event) {
+      // 获取历史状态
+      const state = event.state || {};
+      
       // 获取当前URL的缓存内容
       const newUrl = pageCache.getKey(window.location.href);
       const cacheContent = pageCache.get(newUrl);
       
-      if (cacheContent) {
+      // 如果有缓存，或者状态标记为已缓存
+      if (cacheContent || state.cached) {
         // 应用缓存内容而不重新加载
         const contentContainer = document.querySelector('.main-content-container');
         if (contentContainer) {
@@ -812,6 +889,9 @@ description: "「组一辈子乐队吧！」"
             } else if (typeof adjustMusicPlayer === 'function') {
               setTimeout(adjustMusicPlayer, 100);
             }
+            
+            // 滚动到顶部
+            window.scrollTo(0, 0);
           });
         }
       } else {

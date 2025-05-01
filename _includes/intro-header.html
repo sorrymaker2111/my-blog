@@ -43,6 +43,7 @@
         max-width: 90%;
         overflow-wrap: break-word;
         word-wrap: break-word;
+        text-align: center;
     }
     
     .typewriter-effect .txt {
@@ -53,6 +54,12 @@
     @keyframes blink-caret {
         from, to { border-color: transparent }
         50% { border-color: #666; }
+    }
+    
+    /* 标题容器，确保居中对齐 */
+    .typewriter-container {
+        width: 100%;
+        text-align: center;
     }
     
     /* 移动端优化 */
@@ -162,8 +169,10 @@
         {% endif %}
           {% if page.url == "/" or page.url == "/index.html" %}
             <!-- 首页使用打字机效果 -->
-            <h1 id="typewriter-title" class="typewriter-effect" data-text="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}"></h1>
-            <span id="typewriter-subtitle" class="subheading typewriter-effect" data-text="{{ page.description }}"></span>
+            <div class="typewriter-container">
+              <h1 id="typewriter-title" class="typewriter-effect" data-text="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}"></h1>
+              <span id="typewriter-subtitle" class="subheading typewriter-effect" data-text="{{ page.description }}"></span>
+            </div>
             <!-- 引入打字机效果脚本 -->
             <script src="{{ '/js/typewriter.js' | prepend: site.baseurl }}"></script>
             <!-- 为首页添加特殊类名 -->

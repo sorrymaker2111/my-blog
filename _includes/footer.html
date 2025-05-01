@@ -324,3 +324,48 @@
         });
     });
 </script>
+
+<!-- 页面刷新辅助脚本 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 处理所有指向首页的链接
+        var homeLinks = document.querySelectorAll('a[href="{{ site.baseurl }}/"], a[href="{{ site.baseurl }}"], a[href="/"], a[href="{{ site.baseurl }}/index.html"]');
+        
+        homeLinks.forEach(function(link) {
+            // 如果链接不包含刷新参数
+            if (link.href.indexOf('refresh=true') === -1) {
+                // 为链接添加刷新参数
+                if (link.href.indexOf('?') > -1) {
+                    link.href = link.href + '&refresh=true';
+                } else {
+                    link.href = link.href + '?refresh=true';
+                }
+                
+                // 保存原始点击事件
+                var originalClick = link.onclick;
+                
+                // 替换点击事件
+                link.onclick = function(e) {
+                    // 设置需要刷新的标志
+                    sessionStorage.setItem('needsRefresh', 'true');
+                    
+                    // 调用原始点击事件（如果有）
+                    if (originalClick) {
+                        return originalClick.call(this, e);
+                    }
+                };
+            }
+        });
+        
+        // 设置页面离开时的刷新标记
+        window.addEventListener('beforeunload', function() {
+            // 检查当前页面不是首页时才设置标记
+            if (window.location.pathname !== '/' && 
+                window.location.pathname !== '/index.html' && 
+                window.location.pathname !== '{{ site.baseurl }}/' && 
+                window.location.pathname !== '{{ site.baseurl }}/index.html') {
+                sessionStorage.setItem('needsRefresh', 'true');
+            }
+        });
+    });
+</script>

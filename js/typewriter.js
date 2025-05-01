@@ -27,7 +27,7 @@ class TypeWriter {
             this.txt = fullTxt.substring(0, this.txt.length + 1);
         }
 
-        // 将文本插入元素
+        // 将文本插入元素，确保居中对齐
         this.textElement.innerHTML = `<span class="txt">${this.txt}</span>`;
 
         // 初始化打字速度，添加一些随机性
@@ -93,7 +93,7 @@ class SyncedTypeWriter {
                 this.txts[i] = fullTxt.substring(0, this.txts[i].length + 1);
             }
             
-            // 将文本插入元素
+            // 将文本插入元素，确保居中对齐
             this.elements[i].innerHTML = `<span class="txt">${this.txts[i]}</span>`;
             
             // 检查是否所有文本都完成或都为空
@@ -144,6 +144,12 @@ function setupHomePage() {
         const titleElement = document.getElementById('typewriter-title');
         const subtitleElement = document.getElementById('typewriter-subtitle');
         
+        // 确保元素居中对齐
+        if (titleElement && subtitleElement) {
+            titleElement.style.textAlign = 'center';
+            subtitleElement.style.textAlign = 'center';
+        }
+        
         // 移动设备适配
         if (isMobileDevice()) {
             // 为移动设备设置特定样式
@@ -182,6 +188,10 @@ function setupHomePage() {
         // 监听窗口大小变化，动态调整布局
         window.addEventListener('resize', function() {
             if (titleElement && subtitleElement) {
+                // 重新设置对齐方式
+                titleElement.style.textAlign = 'center';
+                subtitleElement.style.textAlign = 'center';
+                
                 // 如果是移动设备但没有添加标记
                 if (isMobileDevice() && !document.body.classList.contains('mobile-device')) {
                     document.body.classList.add('mobile-device');
@@ -202,6 +212,10 @@ function initTypeWriter() {
     const subtitleElement = document.getElementById('typewriter-subtitle');
     
     if (titleElement && subtitleElement) {
+        // 确保元素居中对齐
+        titleElement.style.textAlign = 'center';
+        subtitleElement.style.textAlign = 'center';
+        
         // 标题和副标题的文本集
         const titleText = titleElement.getAttribute('data-text');
         const subtitleText = subtitleElement.getAttribute('data-text');
@@ -229,6 +243,7 @@ function initTypeWriter() {
     } else {
         // 如果只有一个元素存在，则单独处理
         if (titleElement) {
+            titleElement.style.textAlign = 'center';
             const titleVariations = [
                 titleElement.getAttribute('data-text'),
                 "MyGO!!!!!", 
@@ -239,6 +254,7 @@ function initTypeWriter() {
         }
         
         if (subtitleElement) {
+            subtitleElement.style.textAlign = 'center';
             const subtitleVariations = [
                 subtitleElement.getAttribute('data-text'),
                 "「组一辈子乐队吧！」",

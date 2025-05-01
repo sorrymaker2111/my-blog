@@ -13,7 +13,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ site.baseurl }}/">{{ site.title }}</a>
+                <a class="navbar-brand" href="{{ site.baseurl }}/?refresh=true">{{ site.title }}</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -21,7 +21,7 @@
                 <div class="navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a href="{{ site.baseurl }}/">Home</a>
+                            <a href="{{ site.baseurl }}/?refresh=true">Home</a>
                         </li>
                         {% for page in site.pages %}
                         {% if page.title and page.hide-in-nav != true %}
@@ -94,4 +94,31 @@
             if (e.target.className == 'icon-bar') return;
             __HuxNav__.close();
         })
+    </script>
+    
+    <!-- 页面刷新辅助脚本 -->
+    <script>
+        // 记录用户是否从其他页面跳转到首页
+        document.addEventListener('DOMContentLoaded', function() {
+            // 将首页链接添加刷新参数
+            var internalLinks = document.querySelectorAll('a[href*="{{ site.baseurl }}/"]');
+            internalLinks.forEach(function(link) {
+                // 只处理指向首页的链接
+                if (link.getAttribute('href') === '{{ site.baseurl }}/' || link.getAttribute('href') === '{{ site.baseurl }}' || link.getAttribute('href') === '/' || link.getAttribute('href').indexOf('{{ site.baseurl }}/index.html') > -1) {
+                    // 保存原始点击事件
+                    var originalClick = link.onclick;
+                    
+                    // 添加新的点击事件
+                    link.onclick = function(e) {
+                        // 设置会话存储，标记需要刷新
+                        sessionStorage.setItem('needsRefresh', 'true');
+                        
+                        // 如果有原始点击事件，执行它
+                        if (originalClick) {
+                            return originalClick.call(this, e);
+                        }
+                    };
+                }
+            });
+        });
     </script>

@@ -262,11 +262,20 @@ description: "「组一辈子乐队吧！」"
 
 <!-- 自动更新内容脚本 -->
 <script>
+  // 检查URL中是否有强制刷新参数
+  function hasRefreshParam() {
+    return window.location.href.indexOf('refresh=true') > -1;
+  }
+  
   // 自动刷新页面内容
-  function autoRefreshContent() {
-    // 检查是否有新内容可用
-    fetch(window.location.href, {
-      cache: 'no-store',
+  function autoRefreshContent(forceRefresh = false) {
+    // 检查是否有新内容可用，如果是强制刷新则添加时间戳参数避免缓存
+    const url = forceRefresh 
+      ? window.location.href + (hasRefreshParam() ? '' : (window.location.href.indexOf('?') > -1 ? '&' : '?') + 'refresh=true&t=' + new Date().getTime())
+      : window.location.href;
+    
+    fetch(url, {
+      cache: forceRefresh ? 'no-cache' : 'no-store',
       headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
     .then(response => response.text())
@@ -280,26 +289,90 @@ description: "「组一辈子乐队吧！」"
       const currentPosts = document.querySelector('.main-content-container');
       
       if (newPosts && currentPosts) {
-        // 检查内容是否真的有变化
-        if (newPosts.innerHTML !== currentPosts.innerHTML) {
+        // 检查内容是否真的有变化或强制刷新
+        if (forceRefresh || newPosts.innerHTML !== currentPosts.innerHTML) {
           // 只更新内容部分，不重载整个页面
           currentPosts.innerHTML = newPosts.innerHTML;
-          // 移除控制台日志，不显示更新提示
+          
+          // 重新初始化音乐播放器（如果存在）
+          if (typeof adjustMusicPlayer === 'function') {
+            setTimeout(adjustMusicPlayer, 100);
+          }
+          
+          // 移除URL中的刷新参数
+          if (hasRefreshParam() && window.history && window.history.replaceState) {
+            const cleanUrl = window.location.href.replace(/[?&]refresh=true/, '').replace(/[?&]t=\d+/, '');
+            window.history.replaceState({}, document.title, cleanUrl);
+          }
         }
       }
     })
     .catch(error => {
       // 静默处理错误，不在控制台显示
+      console.error("刷新内容时发生错误:", error);
+    });
+  }
+  
+  // 修改所有内部链接，添加刷新参数
+  function modifyInternalLinks() {
+    const domain = window.location.origin;
+    const baseUrl = '{{ site.baseurl }}';
+    const links = document.querySelectorAll('a');
+    
+    links.forEach(link => {
+      // 只处理内部链接
+      if (link.href && (link.href.startsWith(domain) || link.href.startsWith(baseUrl) || link.href.startsWith('/'))) {
+        // 保存原始的点击事件
+        const originalClick = link.onclick;
+        
+        // 添加新的点击事件处理
+        link.onclick = function(e) {
+          // 如果链接已经包含refresh参数，则不再添加
+          if (link.href.indexOf('refresh=true') === -1) {
+            // 确定正确的分隔符
+            const separator = link.href.indexOf('?') > -1 ? '&' : '?';
+            // 修改链接，添加刷新参数
+            link.href = link.href + separator + 'refresh=true';
+          }
+          
+          // 调用原始的点击事件处理（如果有）
+          if (originalClick) {
+            return originalClick.call(this, e);
+          }
+        };
+      }
     });
   }
 
-  // 页面加载完成后立即执行一次刷新，然后设置定期检查
+  // 页面加载完成后立即执行初始化
   document.addEventListener('DOMContentLoaded', function() {
-    // 立即执行一次刷新
-    autoRefreshContent();
+    // 检查是否需要强制刷新（来自其他页面跳转）
+    const needsForceRefresh = hasRefreshParam() || sessionStorage.getItem('needsRefresh') === 'true';
+    
+    // 立即执行一次刷新，如果需要则强制刷新
+    autoRefreshContent(needsForceRefresh);
+    
+    // 重置刷新标志
+    sessionStorage.setItem('needsRefresh', 'false');
+    
+    // 修改所有内部链接
+    modifyInternalLinks();
+    
+    // 监听页面可见性变化（当用户从其他标签页回到此页面时）
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        // 用户回到页面，执行刷新
+        autoRefreshContent(true);
+      }
+    });
     
     // 之后每60秒检查一次
-    setInterval(autoRefreshContent, 60000);
+    setInterval(() => autoRefreshContent(false), 60000);
+  });
+  
+  // 用户离开当前页面时，设置刷新标志
+  window.addEventListener('beforeunload', function() {
+    sessionStorage.setItem('needsRefresh', 'true');
   });
 </script>
 

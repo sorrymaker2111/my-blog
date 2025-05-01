@@ -6,6 +6,7 @@
     max-width: 90%;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    text-align: center;
 }
 
 /* 光标闪烁效果 */
@@ -46,12 +47,18 @@ body.home-page h1.typewriter-effect {
     font-weight: 800;
     text-shadow: 0 3px 6px rgba(0,0,0,0.6);
     margin-bottom: 20px;
+    width: 100%;
+    display: block;
+    text-align: center;
 }
 
 body.home-page .subheading.typewriter-effect {
     font-size: 30px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     margin-top: 0;
+    width: 100%;
+    display: block;
+    text-align: center;
 }
 
 /* 主页内容与全屏背景的分隔 */
@@ -63,12 +70,14 @@ body.home-page .music-player-title {
 h1.typewriter-effect {
     font-weight: 700;
     margin-bottom: 15px;
+    width: 100%;
 }
 
 /* 打字机副标题样式 */
 .subheading.typewriter-effect {
     font-size: 22px;
     margin-top: 0;
+    width: 100%;
 }
 
 /* 移动设备适配 */

@@ -671,8 +671,18 @@ description: "「组一辈子乐队吧！」"
     // 检查是否需要强制刷新（来自其他页面跳转）
     const needsForceRefresh = hasRefreshParam() || sessionStorage.getItem('needsRefresh') === 'true';
     
-    // 执行刷新，不论是否有缓存都刷新一次确保内容最新
-    autoRefreshContent(needsForceRefresh);
+    // 检查是否是从内部页面返回主页
+    const isReturningToHomePage = isHomePage && 
+                                 sessionStorage.getItem('lastVisitedPage') && 
+                                 sessionStorage.getItem('homePageCacheApplied') === 'true';
+    
+    // 只有在不是返回主页的情况下才执行刷新
+    if (!isReturningToHomePage) {
+      // 执行刷新
+      autoRefreshContent(needsForceRefresh);
+    } else {
+      console.log('从内部页面返回主页，使用缓存内容');
+    }
     
     // 重置刷新标志
     sessionStorage.setItem('needsRefresh', 'false');
@@ -726,12 +736,118 @@ description: "「组一辈子乐队吧！」"
   });
   
   // 用户离开当前页面时，设置刷新标志
-  window.addEventListener('beforeunload', function() {
-    // 将当前页面标记为最后访问的页面
-    const currentUrl = pageCache.getKey(window.location.href);
-    sessionStorage.setItem('lastVisitedPage', currentUrl);
-    sessionStorage.setItem('needsRefresh', 'true');
+  window.addEventListener('beforeunload', function(e) {
+    // 只有在非主页时才设置刷新标志
+    if (!(window.location.pathname === '/' || window.location.pathname === '/index.html')) {
+      // 将当前页面标记为最后访问的页面
+      const currentUrl = pageCache.getKey(window.location.href);
+      sessionStorage.setItem('lastVisitedPage', currentUrl);
+      sessionStorage.setItem('needsRefresh', 'true');
+    } else {
+      // 在主页面时，不设置刷新标志，保持缓存
+      sessionStorage.setItem('needsRefresh', 'false');
+    }
   });
+</script>
+
+<!-- 添加主页面缓存优化脚本 -->
+<script>
+// 主页特殊缓存处理
+(function() {
+  const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
+  const lastPage = sessionStorage.getItem('lastVisitedPage') || '';
+  const cameFromInternalPage = lastPage.includes(window.location.hostname) || lastPage.startsWith('/');
+  
+  // 如果是主页且是从内部页面返回的，使用缓存版本
+  if (isHomePage && cameFromInternalPage) {
+    // 标记已经处理过，避免重复处理
+    sessionStorage.setItem('homePageCacheApplied', 'true');
+    
+    // 使用Performance API检测导航类型
+    if (window.performance && performance.navigation) {
+      if (performance.navigation.type === 2) { // 2表示通过后退/前进按钮导航
+        console.log('通过后退/前进返回主页，保持缓存内容');
+        // 阻止页面重新加载
+        sessionStorage.setItem('needsRefresh', 'false');
+        
+        // 直接从缓存获取内容
+        const currentUrl = window.location.href.split('?')[0]; // 不含参数的URL
+        try {
+          // 检查是否有本地缓存
+          const cachedContent = pageCache.get(currentUrl);
+          if (cachedContent) {
+            const contentContainer = document.querySelector('.main-content-container');
+            if (contentContainer) {
+              // 应用缓存内容
+              contentContainer.innerHTML = cachedContent;
+              console.log('已应用本地缓存的主页内容');
+              
+              // 如果有音乐播放器，重新初始化
+              if (typeof adjustMusicPlayer === 'function') {
+                setTimeout(adjustMusicPlayer, 100);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('应用缓存内容时出错:', e);
+        }
+      }
+    }
+    
+    // 从浏览器缓存中获取主页
+    if ('caches' in window) {
+      caches.open('homepage-cache').then(cache => {
+        const homepageUrl = window.location.href.split('?')[0]; // 不含参数的URL
+        cache.match(homepageUrl).then(response => {
+          if (response) {
+            console.log('主页已存在于浏览器缓存中');
+          } else {
+            // 如果不存在则添加
+            cache.add(homepageUrl).then(() => {
+              console.log('主页已添加到浏览器缓存');
+            });
+          }
+        });
+      }).catch(err => {
+        console.warn('缓存操作失败:', err);
+      });
+    }
+  } else if (isHomePage) {
+    // 首次加载主页，存储到浏览器缓存
+    sessionStorage.removeItem('homePageCacheApplied');
+    if ('caches' in window) {
+      const homepageUrl = window.location.href.split('?')[0]; // 不含参数的URL
+      caches.open('homepage-cache').then(cache => {
+        // 先检查缓存中是否存在
+        cache.match(homepageUrl).then(response => {
+          if (!response) {
+            // 不存在则添加
+            cache.add(homepageUrl).then(() => {
+              console.log('主页首次添加到浏览器缓存');
+            });
+          } else {
+            // 存在则更新
+            cache.delete(homepageUrl).then(() => {
+              cache.add(homepageUrl).then(() => {
+                console.log('主页缓存已更新');
+              });
+            });
+          }
+        });
+      }).catch(err => {
+        console.warn('初始缓存操作失败:', err);
+      });
+    }
+    
+    // 同时保存到本地缓存系统
+    const currentUrl = pageCache.getKey(window.location.href);
+    const mainContent = document.querySelector('.main-content-container');
+    if (mainContent) {
+      pageCache.store(currentUrl, mainContent.innerHTML);
+      console.log('主页内容已保存到本地缓存');
+    }
+  }
+})();
 </script>
 
 <!-- 简单脚本：减少主页内容与背景之间的空白 -->

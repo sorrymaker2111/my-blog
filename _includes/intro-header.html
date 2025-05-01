@@ -125,13 +125,20 @@
         {% else %}
         <div class="site-heading">
         {% endif %}
-          <h1 id="typewriter-title" class="typewriter-effect" data-text="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}"></h1>
-          <span id="typewriter-subtitle" class="subheading typewriter-effect" data-text="{{ page.description }}"></span>
+          {% if page.url == "/" or page.url == "/index.html" %}
+            <!-- 首页使用打字机效果 -->
+            <h1 id="typewriter-title" class="typewriter-effect" data-text="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}"></h1>
+            <span id="typewriter-subtitle" class="subheading typewriter-effect" data-text="{{ page.description }}"></span>
+            <!-- 引入打字机效果脚本 -->
+            <script src="{{ '/js/typewriter.js' | prepend: site.baseurl }}"></script>
+          {% else %}
+            <!-- 其他页面使用静态文字 -->
+            <h1>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</h1>
+            <span class="subheading">{{ page.description }}</span>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
 </header>
-<!-- 引入打字机效果脚本 -->
-<script src="{{ '/js/typewriter.js' | prepend: site.baseurl }}"></script>
 {% endif %}

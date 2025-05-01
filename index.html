@@ -764,6 +764,8 @@ description: "「组一辈子乐队吧！」"
           body {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            touch-action: auto !important;
+            overflow: auto !important;
           }
           
           /* 使用更高性能的动画属性 */
@@ -775,8 +777,12 @@ description: "「组一辈子乐队吧！」"
           /* 优化滚动容器 */
           .main-content-container {
             -webkit-overflow-scrolling: touch;
-            overflow-y: auto;
-            overscroll-behavior-y: contain;
+            overflow-y: auto !important;
+            overscroll-behavior-y: auto;
+            height: auto !important;
+            touch-action: auto !important;
+            position: relative;
+            z-index: 10;
           }
           
           /* 减少hover状态引起的重绘 */
@@ -790,21 +796,51 @@ description: "「组一辈子乐队吧！」"
               will-change: transform;
               transform: translateZ(0);
               opacity: 0.8; /* 稍微降低透明度，减轻渲染压力 */
+              pointer-events: none;
+              z-index: 1;
+            }
+            
+            html, body {
+              overflow: auto !important;
+              height: auto !important;
+              position: relative !important;
+              touch-action: auto !important;
             }
           }
         `;
         document.head.appendChild(styleElement);
         
-        // 优化过度滚动行为
-        document.documentElement.style.overscrollBehavior = 'none';
+        // 移除可能导致滚动问题的设置
+        document.documentElement.style.overscrollBehavior = 'auto';
+        document.body.style.overflow = 'auto';
+        document.body.style.height = 'auto';
+        document.documentElement.style.overflow = 'auto';
+        document.documentElement.style.height = 'auto';
         
-        // 处理触摸相关事件，防止意外的页面行为
+        // 处理触摸相关事件，确保允许滚动
         document.addEventListener('touchmove', function(e) {
-          // 允许默认滚动行为，但避免其他意外的触摸行为
-          if (e.target.tagName === 'A' || e.target.closest('.post-preview')) {
-            e.stopPropagation(); // 阻止事件冒泡，但不阻止默认滚动
-          }
+          // 不阻止任何默认滚动行为
         }, { passive: true });
+        
+        // 修复100ms后再次检查滚动问题
+        setTimeout(function() {
+          // 确保滚动容器可以滚动
+          var contentContainer = document.querySelector('.main-content-container');
+          if (contentContainer) {
+            contentContainer.style.overflow = 'auto';
+            contentContainer.style.touchAction = 'auto';
+          }
+          
+          // 重置文档滚动设置
+          document.documentElement.style.overflow = 'auto';
+          document.body.style.overflow = 'auto';
+          
+          // 确保背景不会阻止触摸事件
+          var bgElement = document.getElementById('geometry-background');
+          if (bgElement) {
+            bgElement.style.pointerEvents = 'none';
+          }
+        }, 100);
       }
     }
   });

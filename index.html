@@ -115,11 +115,15 @@ description: "「组一辈子乐队吧！」"
         <div id="musicPlayerWrapper" class="music-player-wrapper pc">
             <iframe id="musicPlayerIframe" frameborder="no" border="0" marginwidth="0" marginheight="0" 
                 class="music-player-iframe" 
-                src="https://music.163.com/outchain/player?type=0&id=13052360489&auto=0&height=430"></iframe>
+                data-src="https://music.163.com/outchain/player?type=0&id=13052360489&auto=0&height=430"></iframe>
         </div>
     </div>
 
     <script>
+        // 记录音乐播放器状态
+        let musicPlayerInitialized = false;
+        let musicPlayerSrc = "";
+        
         // 检测设备类型
         function isMobileDevice() {
             return (window.innerWidth <= 768) || 
@@ -131,21 +135,97 @@ description: "「组一辈子乐队吧！」"
             var wrapper = document.getElementById('musicPlayerWrapper');
             var iframe = document.getElementById('musicPlayerIframe');
             
-            if (isMobileDevice()) {
-                wrapper.className = 'music-player-wrapper mobile';
-                // 移动端使用/m/前缀的播放器
-                if (iframe.src.indexOf('/m/outchain') === -1) {
-                    iframe.src = iframe.src.replace('/outchain', '/m/outchain');
+            if (!iframe) return;
+            
+            const isMobile = isMobileDevice();
+            
+            // 更新播放器类名
+            if (wrapper) {
+                wrapper.className = isMobile ? 'music-player-wrapper mobile' : 'music-player-wrapper pc';
+            }
+            
+            // 确保播放器只加载一次
+            if (!musicPlayerInitialized) {
+                // 第一次加载时，设置正确的src
+                const dataSrc = iframe.getAttribute('data-src');
+                if (dataSrc) {
+                    // 根据设备类型设置正确的URL
+                    musicPlayerSrc = isMobile ? 
+                        dataSrc.replace('/outchain', '/m/outchain') : 
+                        dataSrc;
+                    
+                    // 设置src属性，开始加载播放器
+                    iframe.src = musicPlayerSrc;
+                    musicPlayerInitialized = true;
+                    
+                    // 存储到sessionStorage，便于返回时恢复
+                    try {
+                        sessionStorage.setItem('musicPlayerSrc', musicPlayerSrc);
+                        sessionStorage.setItem('musicPlayerInitialized', 'true');
+                    } catch (e) {
+                        console.warn('无法保存音乐播放器状态', e);
+                    }
                 }
             } else {
-                wrapper.className = 'music-player-wrapper pc';
-                // PC端使用普通播放器
-                iframe.src = iframe.src.replace('/m/outchain', '/outchain');
+                // 已经初始化，仅在设备类型变化时更新src
+                const correctSrc = isMobile ? 
+                    iframe.src.replace('/outchain', '/m/outchain') : 
+                    iframe.src.replace('/m/outchain', '/outchain');
+                
+                // 如果需要切换URL但没有改变，避免重新加载
+                if (correctSrc !== iframe.src) {
+                    musicPlayerSrc = correctSrc;
+                    iframe.src = musicPlayerSrc;
+                    
+                    // 更新存储
+                    try {
+                        sessionStorage.setItem('musicPlayerSrc', musicPlayerSrc);
+                    } catch (e) {
+                        console.warn('无法更新音乐播放器状态', e);
+                    }
+                }
             }
         }
         
-        // 页面加载和窗口大小改变时调整
-        window.addEventListener('load', adjustMusicPlayer);
+        // 恢复音乐播放器状态
+        function restoreMusicPlayer() {
+            try {
+                const savedInitialized = sessionStorage.getItem('musicPlayerInitialized');
+                const savedSrc = sessionStorage.getItem('musicPlayerSrc');
+                
+                if (savedInitialized === 'true' && savedSrc) {
+                    const iframe = document.getElementById('musicPlayerIframe');
+                    if (iframe) {
+                        // 恢复保存的状态
+                        musicPlayerInitialized = true;
+                        musicPlayerSrc = savedSrc;
+                        iframe.src = savedSrc;
+                        console.log('已恢复音乐播放器状态');
+                    }
+                } else {
+                    // 如果没有保存的状态，正常初始化
+                    adjustMusicPlayer();
+                }
+            } catch (e) {
+                console.warn('恢复音乐播放器状态失败', e);
+                // 出错时正常初始化
+                adjustMusicPlayer();
+            }
+        }
+        
+        // 页面加载时检查是否需要恢复状态
+        document.addEventListener('DOMContentLoaded', function() {
+            // 如果是从内部页面返回，尝试恢复播放器状态
+            const isReturningToHome = sessionStorage.getItem('homePageCacheApplied') === 'true';
+            if (isReturningToHome) {
+                restoreMusicPlayer();
+            } else {
+                // 首次访问，正常初始化
+                adjustMusicPlayer();
+            }
+        });
+        
+        // 窗口大小改变时调整
         window.addEventListener('resize', adjustMusicPlayer);
     </script>
     {% endif %}
@@ -455,8 +535,10 @@ description: "「组一辈子乐队吧！」"
         requestAnimationFrame(() => {
           currentPosts.innerHTML = cachedContent;
           
-          // 重新初始化音乐播放器（如果存在）
-          if (typeof adjustMusicPlayer === 'function') {
+          // 如果有音乐播放器，恢复而不是重新初始化
+          if (typeof restoreMusicPlayer === 'function') {
+            setTimeout(restoreMusicPlayer, 100);
+          } else if (typeof adjustMusicPlayer === 'function') {
             setTimeout(adjustMusicPlayer, 100);
           }
           
@@ -506,8 +588,10 @@ description: "「组一辈子乐队吧！」"
           // 将新内容存储到缓存
           pageCache.store(currentUrl, newPosts.innerHTML);
           
-          // 重新初始化音乐播放器（如果存在）
-          if (typeof adjustMusicPlayer === 'function') {
+          // 如果有音乐播放器，恢复而不是重新初始化
+          if (typeof restoreMusicPlayer === 'function') {
+            setTimeout(restoreMusicPlayer, 100);
+          } else if (typeof adjustMusicPlayer === 'function') {
             setTimeout(adjustMusicPlayer, 100);
           }
           
@@ -611,8 +695,10 @@ description: "「组一辈子乐队吧！」"
                   window.history.pushState({}, document.title, link.href);
                 }
                 
-                // 重新初始化音乐播放器（如果存在）
-                if (typeof adjustMusicPlayer === 'function') {
+                // 如果有音乐播放器，恢复而不是重新初始化
+                if (typeof restoreMusicPlayer === 'function') {
+                  setTimeout(restoreMusicPlayer, 100);
+                } else if (typeof adjustMusicPlayer === 'function') {
                   setTimeout(adjustMusicPlayer, 100);
                 }
                 
@@ -660,8 +746,10 @@ description: "「组一辈子乐队吧！」"
         requestAnimationFrame(() => {
           contentContainer.innerHTML = cachedContent;
           
-          // 如果页面有音乐播放器，初始化它
-          if (typeof adjustMusicPlayer === 'function') {
+          // 如果有音乐播放器，恢复而不是重新初始化
+          if (typeof restoreMusicPlayer === 'function') {
+            setTimeout(restoreMusicPlayer, 100);
+          } else if (typeof adjustMusicPlayer === 'function') {
             setTimeout(adjustMusicPlayer, 100);
           }
         });
@@ -718,8 +806,10 @@ description: "「组一辈子乐队吧！」"
           requestAnimationFrame(() => {
             contentContainer.innerHTML = cacheContent;
             
-            // 重新初始化音乐播放器（如果存在）
-            if (typeof adjustMusicPlayer === 'function') {
+            // 如果有音乐播放器，恢复而不是重新初始化
+            if (typeof restoreMusicPlayer === 'function') {
+              setTimeout(restoreMusicPlayer, 100);
+            } else if (typeof adjustMusicPlayer === 'function') {
               setTimeout(adjustMusicPlayer, 100);
             }
           });
@@ -754,6 +844,27 @@ description: "「组一辈子乐队吧！」"
 <script>
 // 主页特殊缓存处理
 (function() {
+  // 保存音乐播放器状态到localStorage，使其在刷新后保持
+  try {
+    // 获取播放器状态
+    const musicPlayerSrc = sessionStorage.getItem('musicPlayerSrc') || '';
+    const musicPlayerInitialized = sessionStorage.getItem('musicPlayerInitialized') || 'false';
+    
+    // 保存到localStorage以在刷新后恢复
+    if (musicPlayerInitialized === 'true' && musicPlayerSrc) {
+      localStorage.setItem('musicPlayerSrc', musicPlayerSrc);
+      localStorage.setItem('musicPlayerInitialized', 'true');
+    }
+    
+    // 从localStorage恢复到sessionStorage（刷新后）
+    if (!sessionStorage.getItem('musicPlayerSrc') && localStorage.getItem('musicPlayerSrc')) {
+      sessionStorage.setItem('musicPlayerSrc', localStorage.getItem('musicPlayerSrc'));
+      sessionStorage.setItem('musicPlayerInitialized', localStorage.getItem('musicPlayerInitialized') || 'false');
+    }
+  } catch (e) {
+    console.warn('保存/恢复音乐播放器状态失败', e);
+  }
+  
   const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
   const lastPage = sessionStorage.getItem('lastVisitedPage') || '';
   const cameFromInternalPage = lastPage.includes(window.location.hostname) || lastPage.startsWith('/');
@@ -782,8 +893,10 @@ description: "「组一辈子乐队吧！」"
               contentContainer.innerHTML = cachedContent;
               console.log('已应用本地缓存的主页内容');
               
-              // 如果有音乐播放器，重新初始化
-              if (typeof adjustMusicPlayer === 'function') {
+              // 如果有音乐播放器，恢复而不是重新初始化
+              if (typeof restoreMusicPlayer === 'function') {
+                setTimeout(restoreMusicPlayer, 100);
+              } else if (typeof adjustMusicPlayer === 'function') {
                 setTimeout(adjustMusicPlayer, 100);
               }
             }

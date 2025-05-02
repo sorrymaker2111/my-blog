@@ -57,7 +57,6 @@
 <style>
   .floating-sidebar {
     position: absolute; /* 更改为绝对定位，使其固定在顶部图片底部 */
-    right: 30px; /* 屏幕右侧的距离 */
     width: 260px;
     padding: 12px;
     z-index: 100;
@@ -68,6 +67,7 @@
     -webkit-backdrop-filter: blur(5px); /* Safari支持 */
     border-radius: 10px; /* 圆角 */
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); /* 轻微阴影效果 */
+    /* 删除右侧固定距离，用JavaScript动态设置 */
   }
 
   .floating-sidebar section {
@@ -178,9 +178,10 @@
     // 获取元素
     const introHeader = document.querySelector('.intro-header');
     const floatingSidebar = document.getElementById('floating-sidebar');
+    const container = document.querySelector('.container');
     
     // 如果找不到必要元素，则退出
-    if (!introHeader || !floatingSidebar) return;
+    if (!introHeader || !floatingSidebar || !container) return;
     
     // 更新侧边栏位置函数
     function updateSidebarPosition() {
@@ -198,19 +199,35 @@
     
     // 更新侧边栏水平位置
     function updateHorizontalPosition() {
-      const contentBg = document.getElementById('sidebar-background');
+      // 获取主内容容器的位置和宽度
+      const containerRect = container.getBoundingClientRect();
+      const postlistContainer = document.querySelector('.postlist-container');
+      let contentWidth = 0;
       
-      if (contentBg && floatingSidebar) {
-        const contentRect = contentBg.getBoundingClientRect();
-        floatingSidebar.style.left = (contentRect.left + 10) + 'px';
-        floatingSidebar.style.width = (contentRect.width - 20) + 'px';
+      if (postlistContainer) {
+        // 如果找到文章列表容器，使用它的宽度
+        const postlistRect = postlistContainer.getBoundingClientRect();
+        contentWidth = postlistRect.width;
       } else {
-        // 如果找不到背景元素，使用window宽度计算
-        const windowWidth = window.innerWidth;
-        if (windowWidth > 1200) {
-          const rightPosition = Math.max(30, (windowWidth - 1170) / 2); // 假设内容区宽度为1170px
-          floatingSidebar.style.right = rightPosition + 'px';
-        }
+        // 否则估计内容区域宽度（container宽度的2/3）
+        contentWidth = containerRect.width * 2/3;
+      }
+      
+      // 计算侧边栏应放置的位置（内容区域右侧）
+      const sidebarLeft = containerRect.left + contentWidth + 50; // 50px的间距
+      const windowWidth = window.innerWidth;
+      
+      // 计算右侧边距（确保不会超出屏幕）
+      const rightMargin = Math.max(30, windowWidth - sidebarLeft - 260 - 30); // 260是侧边栏宽度，30是右侧安全距离
+      
+      // 设置侧边栏位置
+      floatingSidebar.style.right = rightMargin + 'px';
+      
+      // 检查侧边栏是否覆盖了内容
+      const sidebarRect = floatingSidebar.getBoundingClientRect();
+      if (sidebarRect.left < containerRect.left + contentWidth + 20) {
+        // 侧边栏覆盖了内容，将其移至右侧更远处
+        floatingSidebar.style.right = '30px';
       }
     }
     

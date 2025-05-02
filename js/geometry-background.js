@@ -23,17 +23,28 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initGeometryBackground() {
-  // 创建容器元素
-  const container = document.createElement('div');
-  container.id = 'geometry-background';
-  container.style.position = 'fixed';
-  container.style.top = '0';
-  container.style.left = '0';
-  container.style.width = '100%';
-  container.style.height = '100%';
-  container.style.zIndex = '-1';
-  container.style.pointerEvents = 'none'; // 确保不会影响页面交互
-  document.body.insertBefore(container, document.body.firstChild);
+  // 检查容器是否已存在
+  let container = document.getElementById('geometry-background');
+  if (!container) {
+    // 创建容器元素
+    container = document.createElement('div');
+    container.id = 'geometry-background';
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.zIndex = '-2';
+    container.style.pointerEvents = 'none'; // 确保不会影响页面交互
+    
+    // 添加半透明背景色，但不设置背景图片，确保可以看到底层图片
+    container.style.backgroundColor = 'rgba(230, 240, 250, 0.6)';
+    // 移除渐变背景，以免覆盖主背景图片
+    // container.style.backgroundImage = 'linear-gradient(120deg, rgba(230, 240, 255, 0.8), rgba(210, 230, 255, 0.8))';
+    container.style.overflow = 'hidden'; // 确保不会出现滚动条
+    
+    document.body.insertBefore(container, document.body.firstChild);
+  }
 
   // 获取内容区域的位置
   const headerElement = document.querySelector('.intro-header');
@@ -64,30 +75,15 @@ function initGeometryBackground() {
   contentBg.style.left = contentLeft + 'px';
   contentBg.style.width = (contentRight - contentLeft) + 'px';
   contentBg.style.height = '100%';
-  contentBg.style.backgroundColor = 'rgba(230, 240, 250, 0.1)'; // 淡蓝色，与两侧灰色图形形成对比
-  contentBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1)'; // 两侧阴影
+  contentBg.style.backgroundColor = 'rgba(255, 255, 255, 0.4)'; // 半透明白色背景
+  contentBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.15), 5px 0 15px rgba(100, 140, 190, 0.15)';
   contentBg.style.zIndex = '-1'; // 确保在几何图形之上，但在内容之下
-  contentBg.style.borderLeft = '1px solid rgba(150, 180, 220, 0.1)'; // 左边框
-  contentBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.1)'; // 右边框
+  contentBg.style.borderLeft = '1px solid rgba(150, 180, 220, 0.3)'; // 左边框
+  contentBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.3)'; // 右边框
+  contentBg.style.backdropFilter = 'blur(8px)'; // 增加模糊效果
+  contentBg.style.webkitBackdropFilter = 'blur(8px)'; // Safari支持
+  contentBg.style.border = '1px solid rgba(150, 180, 220, 0.3)'; // 边框样式
   document.body.insertBefore(contentBg, container.nextSibling);
-
-  // 创建侧边栏背景矩形 (在移动设备上不显示)
-  if (!isMobileDevice()) {
-    const sidebarBg = document.createElement('div');
-    sidebarBg.id = 'sidebar-background';
-    sidebarBg.style.position = 'fixed';
-    sidebarBg.style.top = '0';
-    sidebarBg.style.left = (contentRight + 20) + 'px'; // 在内容区域右侧20px处
-    sidebarBg.style.width = '280px'; // 固定宽度
-    sidebarBg.style.height = '100%';
-    sidebarBg.style.backgroundColor = 'rgba(230, 240, 250, 0.1)'; // 与内容区域背景相同
-    sidebarBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1)';
-    sidebarBg.style.zIndex = '-1';
-    sidebarBg.style.borderLeft = '1px solid rgba(150, 180, 220, 0.1)';
-    sidebarBg.style.borderRight = '1px solid rgba(150, 180, 220, 0.1)';
-    sidebarBg.style.border = '1px solid rgba(150, 180, 220, 0.15)';
-    document.body.insertBefore(sidebarBg, contentBg.nextSibling);
-  }
 
   // 处理窗口大小变化时更新内容背景
   function updateContentBackground() {
@@ -101,6 +97,8 @@ function initGeometryBackground() {
       contentBg.style.left = updatedContentLeft + 'px';
       contentBg.style.width = (updatedContentRight - updatedContentLeft) + 'px';
       
+      // 更新侧边栏背景位置相关代码也注释掉
+      /*
       // 更新侧边栏背景位置（如果存在）
       const sidebarBg = document.getElementById('sidebar-background');
       if (sidebarBg) {
@@ -111,6 +109,7 @@ function initGeometryBackground() {
           sidebarBg.style.left = (updatedContentRight + 20) + 'px';
         }
       }
+      */
     }
   }
 
@@ -512,7 +511,7 @@ function initGeometryBackground() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     
-    // 更新相机
+    // 重设相机
     camera.left = width / -2;
     camera.right = width / 2;
     camera.top = height / 2;
@@ -521,28 +520,7 @@ function initGeometryBackground() {
     
     renderer.setSize(width, height);
     
-    // 更新内容区域位置
-    if (contentElement) {
-      contentRect = contentElement.getBoundingClientRect();
-      
-      // 更新安全区域
-      const currentSafeMargin = isMobileDevice() ? 10 : 50;
-      const contentLeft = contentRect.left - currentSafeMargin;
-      const contentRight = contentRect.right + currentSafeMargin;
-    }
-
-    // 更新内容背景
-    updateContentBackground();
-    
-    // 重新调整图形位置以适应新的屏幕尺寸
-    scene.remove(leftShapes);
-    scene.remove(rightShapes);
-    
-    leftShapes = new THREE.Group();
-    rightShapes = new THREE.Group();
-    scene.add(leftShapes);
-    scene.add(rightShapes);
-    
+    // 重新创建几何图形，适应新窗口大小
     createLeftShapes();
     createRightShapes();
   }
@@ -552,7 +530,7 @@ function initGeometryBackground() {
 
   // 监听鼠标移动
   document.addEventListener('mousemove', function(event) {
-    // 计算鼠标位置在 -1 到 1 之间的标准化坐标
+    // 计算鼠标位置的归一化值 (-1 到 1)
     targetMouseX = (event.clientX / window.innerWidth) * 2 - 1;
     targetMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
     touchEnabled = false; // 使用鼠标时禁用触摸模式
@@ -561,7 +539,7 @@ function initGeometryBackground() {
   // 监听触摸移动（移动设备）
   document.addEventListener('touchmove', function(event) {
     if (event.touches.length > 0) {
-      // 计算触摸位置在 -1 到 1 之间的标准化坐标
+      // 计算触摸位置的归一化值
       targetMouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
       targetMouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
       touchEnabled = true; // 启用触摸模式
@@ -640,4 +618,19 @@ function initGeometryBackground() {
 
   // 开始动画
   animate(0);
+
+  // 确保背景总是全屏
+  function ensureFullscreenBackground() {
+    if (container) {
+      container.style.height = '100vh';
+      container.style.width = '100vw';
+      container.style.position = 'fixed';
+      container.style.top = '0';
+      container.style.left = '0';
+      container.style.zIndex = '-2';
+    }
+  }
+
+  // 定期检查背景是否完全覆盖视窗
+  setInterval(ensureFullscreenBackground, 2000);
 } 

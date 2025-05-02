@@ -85,25 +85,6 @@ function initGeometryBackground() {
   contentBg.style.border = '1px solid rgba(150, 180, 220, 0.3)'; // 边框样式
   document.body.insertBefore(contentBg, container.nextSibling);
 
-  // 创建侧边栏背景矩形 (在移动设备上不显示)
-  if (!isMobileDevice()) {
-    const sidebarBg = document.createElement('div');
-    sidebarBg.id = 'sidebar-background';
-    sidebarBg.style.position = 'fixed';
-    sidebarBg.style.top = '0';
-    sidebarBg.style.left = (contentRight + 20) + 'px'; // 在内容区域右侧20px处
-    sidebarBg.style.width = '280px'; // 固定宽度
-    sidebarBg.style.height = '100%';
-    sidebarBg.style.backgroundColor = 'rgba(255, 255, 255, 0.4)'; // 半透明白色背景
-    sidebarBg.style.boxShadow = '-5px 0 15px rgba(100, 140, 190, 0.15), 5px 0 15px rgba(100, 140, 190, 0.15)';
-    sidebarBg.style.zIndex = '-1';
-    sidebarBg.style.backdropFilter = 'blur(8px)'; // 增加模糊效果
-    sidebarBg.style.webkitBackdropFilter = 'blur(8px)'; // Safari支持
-    sidebarBg.style.border = '1px solid rgba(150, 180, 220, 0.3)'; // 边框样式
-    sidebarBg.style.transition = 'transform 0.3s ease'; // 添加过渡效果
-    document.body.insertBefore(sidebarBg, contentBg.nextSibling);
-  }
-
   // 处理窗口大小变化时更新内容背景
   function updateContentBackground() {
     if (contentElement) {
@@ -116,6 +97,8 @@ function initGeometryBackground() {
       contentBg.style.left = updatedContentLeft + 'px';
       contentBg.style.width = (updatedContentRight - updatedContentLeft) + 'px';
       
+      // 更新侧边栏背景位置相关代码也注释掉
+      /*
       // 更新侧边栏背景位置（如果存在）
       const sidebarBg = document.getElementById('sidebar-background');
       if (sidebarBg) {
@@ -126,6 +109,7 @@ function initGeometryBackground() {
           sidebarBg.style.left = (updatedContentRight + 20) + 'px';
         }
       }
+      */
     }
   }
 

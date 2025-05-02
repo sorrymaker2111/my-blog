@@ -8,11 +8,10 @@
   left: 0;
   width: 100%;
   height: 100vh;
-  z-index: -2; /* 调整为-2，使其在内容背景矩形之下 */
+  z-index: -2; /* 在背景图片上方，但在内容下方 */
   pointer-events: none;
-  background-color: rgba(230, 240, 250, 0.8); /* 添加背景色 */
-  background-attachment: fixed; /* 固定背景 */
-  background-size: cover; /* 覆盖全屏 */
+  background-color: rgba(230, 240, 250, 0.6) !important; /* 半透明背景，让底图可见 */
+  background-image: none !important; /* 禁用可能的背景图片 */
   overflow: hidden; /* 确保内容不会溢出 */
 }
 

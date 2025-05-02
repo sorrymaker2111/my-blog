@@ -1,0 +1,600 @@
+/* 二次元风格样式 */
+
+/* 整体背景样式 */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3; /* 放在最底层 */
+    background-image: url('/img/post-bg-galgame.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    font-family: 'Noto Sans SC', sans-serif;
+}
+
+/* 修改几何背景容器样式 */
+#geometry-background {
+    background-color: rgba(230, 240, 250, 0.6) !important; /* 降低不透明度让底图更明显 */
+    background-image: none !important; /* 移除可能的渐变背景 */
+}
+
+/* 页面标题样式 */
+.navbar-brand {
+    font-family: 'Mochiy Pop One', sans-serif;
+    color: #ff6b97 !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 导航菜单样式 */
+.navbar-custom {
+    background-color: rgba(255, 255, 255, 0.85);
+    border-bottom: 2px solid #ff6b97;
+}
+
+.navbar-custom .nav li a {
+    color: #7986cb;
+    transition: all 0.3s ease;
+}
+
+.navbar-custom .nav li a:hover {
+    color: #ff6b97;
+    transform: translateY(-2px);
+}
+
+/* 主内容区的容器 */
+.main-content-container {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 182, 193, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(255, 107, 151, 0.2);
+    padding: 25px;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 20px;
+}
+
+.main-content-container:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 24px rgba(255, 107, 151, 0.3);
+}
+
+/* 卡通风格装饰元素 */
+.main-content-container::before {
+    content: "";
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    width: 30px;
+    height: 30px;
+    background-color: #FF9CE3;
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px rgba(255, 156, 227, 0.3);
+    z-index: -1;
+}
+
+.main-content-container::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    right: 30px;
+    width: 20px;
+    height: 20px;
+    background-color: #A7C7E7;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(167, 199, 231, 0.3);
+    z-index: -1;
+}
+
+/* 分页导航样式 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+    padding: 10px;
+    list-style: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 182, 193, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pagination:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(255, 107, 151, 0.2);
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a,
+.pagination li span {
+    display: block;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 182, 193, 0.5);
+    color: #6c5ce7;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.pagination li a:hover {
+    background-color: #ffdbf0;
+    color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(255, 107, 151, 0.2);
+}
+
+.pagination li.active span {
+    background-color: #ff6b97;
+    color: white;
+    border-color: #ff6b97;
+}
+
+.pagination li.disabled span {
+    color: #bbb;
+    cursor: not-allowed;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.page-count {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #6c5ce7;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 182, 193, 0.5);
+}
+
+.page-count:hover {
+    transform: scale(1.03);
+}
+
+/* 文章预览区域 */
+.post-preview {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 182, 193, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.post-preview:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(255, 107, 151, 0.2);
+}
+
+/* 文章标题样式 */
+.post-preview .post-title {
+    color: #6c5ce7;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.post-preview:hover .post-title {
+    color: #ff6b97;
+}
+
+/* 文章副标题样式 */
+.post-preview .post-subtitle {
+    color: #8a8a8a;
+}
+
+/* 文章内容预览 */
+.post-content-preview {
+    color: #666;
+    font-size: 15px;
+    margin: 10px 0;
+}
+
+/* 文章预览装饰元素 */
+.post-preview::before {
+    content: "✨";
+    position: absolute;
+    top: -5px;
+    right: 20px;
+    font-size: 20px;
+    color: #ff6b97;
+}
+
+/* 文章元信息 */
+.post-meta {
+    color: #a0a0a0;
+    font-size: 13px;
+    font-style: italic;
+    border-top: 1px dashed rgba(255, 182, 193, 0.5);
+    padding-top: 10px;
+    margin-top: 15px;
+}
+
+/* 水平分割线样式 */
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 182, 193, 0), rgba(255, 182, 193, 0.75), rgba(255, 182, 193, 0));
+    margin: 30px 0;
+}
+
+/* 适用于所有页面的内容容器 */
+.post-container, .page-container, .postlist-container, .sidebar-container {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 182, 193, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(255, 107, 151, 0.2);
+    padding: 25px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-container:hover, .page-container:hover, .postlist-container:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 24px rgba(255, 107, 151, 0.3);
+}
+
+/* 文章页面样式 */
+.post-heading h1 {
+    color: #ff6b97;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    font-family: 'Mochiy Pop One', 'Noto Sans SC', sans-serif;
+}
+
+.post-heading .subheading {
+    color: #7986cb;
+}
+
+.post-heading .meta {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 移动设备适配 */
+@media (max-width: 768px) {
+    .main-content-container,
+    .post-preview,
+    .pagination,
+    .page-count,
+    .post-container,
+    .page-container,
+    .postlist-container {
+        transform: none !important;
+        transition: box-shadow 0.3s ease;
+    }
+    
+    .main-content-container,
+    .post-container,
+    .page-container,
+    .postlist-container {
+        padding: 15px;
+        margin-top: 10px;
+    }
+    
+    .post-preview {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+}
+
+/* 动画效果 */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating-element {
+    animation: float 5s ease-in-out infinite;
+}
+
+/* 为页面标题添加动画效果 */
+.post-heading, .intro-header .site-heading, .intro-header .page-heading {
+    animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 为标签添加可爱风格 */
+.tag-button {
+    background-color: rgba(255, 182, 193, 0.3);
+    border: 1px solid #ff6b97;
+    border-radius: 15px;
+    color: #6c5ce7 !important;
+    transition: all 0.3s ease;
+}
+
+.tag-button:hover {
+    background-color: #ff6b97;
+    color: white !important;
+    transform: scale(1.05);
+}
+
+/* 美化代码块 */
+pre, code {
+    border-radius: 10px;
+    border: 1px solid rgba(255, 182, 193, 0.5);
+}
+
+/* 侧边栏样式增强 */
+.sidebar-container {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 182, 193, 0.6);
+    box-shadow: 0 4px 15px rgba(255, 107, 151, 0.2);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 侧边栏标题样式 */
+.sidebar-container h5 {
+    color: #ff6b97;
+    font-family: 'Mochiy Pop One', 'Noto Sans SC', sans-serif;
+    text-shadow: 1px 1px 2px rgba(255, 182, 193, 0.5);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px dashed rgba(255, 182, 193, 0.5);
+    position: relative;
+}
+
+/* 侧边栏标题装饰元素 */
+.sidebar-container h5::after {
+    content: "✨";
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 18px;
+    color: #ff6b97;
+    animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+    0% { opacity: 0.5; transform: scale(0.8) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.1) rotate(10deg); }
+    100% { opacity: 0.5; transform: scale(0.8) rotate(0deg); }
+}
+
+/* Featured Tags 样式 */
+.tags {
+    margin-bottom: 30px;
+}
+
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-cloud a {
+    display: inline-block;
+    padding: 5px 12px;
+    background-color: rgba(255, 182, 193, 0.2);
+    border-radius: 15px;
+    color: #6c5ce7;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 182, 193, 0.4);
+    text-decoration: none;
+}
+
+.tag-cloud a:hover {
+    background-color: #ff6b97;
+    color: white !important;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 5px 10px rgba(255, 107, 151, 0.3);
+}
+
+.tag-cloud a::before {
+    content: "#";
+    margin-right: 3px;
+    opacity: 0.7;
+}
+
+/* Short About Me 样式 */
+.short-about {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.short-about img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 182, 193, 0.7);
+    padding: 3px;
+    background-color: white;
+    transition: all 0.5s ease;
+    box-shadow: 0 3px 10px rgba(255, 107, 151, 0.2);
+}
+
+.short-about img:hover {
+    transform: rotate(10deg) scale(1.1);
+    border-color: #ff6b97;
+    box-shadow: 0 5px 15px rgba(255, 107, 151, 0.4);
+}
+
+.short-about p {
+    margin: 15px 0;
+    color: #666;
+    font-size: 15px;
+}
+
+/* 还原社交媒体图标的原始大小和位置 */
+.short-about .list-inline {
+    margin-top: 15px;
+    padding-left: 0;
+}
+
+.short-about .list-inline li {
+    margin: 0 3px; /* 还原原始间距 */
+    padding: 0;
+    display: inline-block;
+}
+
+/* 社交媒体图标的基本样式 */
+.short-about .list-inline a {
+    color: #7986cb;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+/* 社交媒体图标悬停效果 */
+.short-about .list-inline a:hover {
+    color: #ff6b97;
+    transform: translateY(-3px); /* 保留悬停动画，但不改变大小 */
+}
+
+/* 为图标添加动画效果 */
+.short-about .fa-stack {
+    transition: all 0.3s ease;
+}
+
+.short-about .fa-stack:hover {
+    transform: translateY(-3px);
+}
+
+/* 图标背景圆圈样式 */
+.short-about .fa-circle {
+    color: rgba(255, 182, 193, 0.7); /* 粉色背景圆圈 */
+    transition: all 0.3s ease;
+}
+
+.short-about .list-inline a:hover .fa-circle {
+    color: #ff6b97; /* 悬停时加深颜色 */
+}
+
+/* 图标前景样式 */
+.short-about .fa-inverse {
+    color: white;
+}
+
+/* B站和抖音图标样式 */
+.short-about img[src*="bilibili_icon.png"],
+.short-about img[src*="douyin_icon.png"] {
+    width: 24px; /* 保持原始大小 */
+    height: 24px; /* 保持原始大小 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease;
+}
+
+/* 添加动画小装饰 */
+.short-about::before {
+    content: "🌸";
+    position: absolute;
+    top: -10px;
+    left: 20%;
+    font-size: 24px;
+    animation: float 4s ease-in-out infinite;
+}
+
+.short-about::after {
+    content: "✨";
+    position: absolute;
+    bottom: -5px;
+    right: 20%;
+    font-size: 20px;
+    animation: float 5s ease-in-out infinite;
+}
+
+/* 为友情链接添加样式 */
+.friends-container {
+    margin-top: 20px;
+}
+
+.friend-link {
+    display: inline-block;
+    margin: 5px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 182, 193, 0.5);
+    color: #7986cb;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.friend-link:hover {
+    background-color: #ffdbf0;
+    color: #ff6b97;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 5px 10px rgba(255, 107, 151, 0.2);
+    text-decoration: none;
+}
+
+/* 侧边栏容器的独特悬停效果 */
+.sidebar-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 107, 151, 0.25);
+}
+
+/* 侧边栏内的链接统一样式 */
+.sidebar-container a {
+    position: relative;
+    z-index: 1;
+}
+
+/* 链接点击时的波纹效果 */
+.sidebar-container a:active::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 182, 193, 0.6);
+    border-radius: 50%;
+    z-index: -1;
+    animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(20);
+        opacity: 0;
+    }
+} 

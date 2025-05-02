@@ -23,25 +23,28 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initGeometryBackground() {
-  // 创建容器元素
-  const container = document.createElement('div');
-  container.id = 'geometry-background';
-  container.style.position = 'fixed';
-  container.style.top = '0';
-  container.style.left = '0';
-  container.style.width = '100%';
-  container.style.height = '100%';
-  container.style.zIndex = '-2';
-  container.style.pointerEvents = 'none'; // 确保不会影响页面交互
-  
-  // 添加渐变背景色
-  container.style.backgroundColor = 'rgba(230, 240, 250, 0.8)';
-  container.style.backgroundImage = 'linear-gradient(120deg, rgba(230, 240, 255, 0.8), rgba(210, 230, 255, 0.8))';
-  container.style.backgroundAttachment = 'fixed';
-  container.style.backgroundSize = 'cover';
-  container.style.overflow = 'hidden'; // 确保不会出现滚动条
-  
-  document.body.insertBefore(container, document.body.firstChild);
+  // 检查容器是否已存在
+  let container = document.getElementById('geometry-background');
+  if (!container) {
+    // 创建容器元素
+    container = document.createElement('div');
+    container.id = 'geometry-background';
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.zIndex = '-2';
+    container.style.pointerEvents = 'none'; // 确保不会影响页面交互
+    
+    // 添加半透明背景色，但不设置背景图片，确保可以看到底层图片
+    container.style.backgroundColor = 'rgba(230, 240, 250, 0.6)';
+    // 移除渐变背景，以免覆盖主背景图片
+    // container.style.backgroundImage = 'linear-gradient(120deg, rgba(230, 240, 255, 0.8), rgba(210, 230, 255, 0.8))';
+    container.style.overflow = 'hidden'; // 确保不会出现滚动条
+    
+    document.body.insertBefore(container, document.body.firstChild);
+  }
 
   // 获取内容区域的位置
   const headerElement = document.querySelector('.intro-header');

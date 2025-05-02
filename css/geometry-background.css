@@ -7,9 +7,13 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   z-index: -2; /* 调整为-2，使其在内容背景矩形之下 */
   pointer-events: none;
+  background-color: rgba(230, 240, 250, 0.8); /* 添加背景色 */
+  background-attachment: fixed; /* 固定背景 */
+  background-size: cover; /* 覆盖全屏 */
+  overflow: hidden; /* 确保内容不会溢出 */
 }
 
 /* 使动画背景不会干扰网站内容 */
@@ -28,13 +32,14 @@
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  background-color: rgba(230, 240, 250, 0.1);
-  box-shadow: -5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1);
-  border-left: 1px solid rgba(150, 180, 220, 0.1);
-  border-right: 1px solid rgba(150, 180, 220, 0.1);
-  backdrop-filter: blur(1px); /* 轻微模糊效果，增强层次感 */
+  background-color: rgba(255, 255, 255, 0.4); /* 增加透明度 */
+  box-shadow: -5px 0 15px rgba(100, 140, 190, 0.15), 5px 0 15px rgba(100, 140, 190, 0.15);
+  border-left: 1px solid rgba(150, 180, 220, 0.3);
+  border-right: 1px solid rgba(150, 180, 220, 0.3);
+  backdrop-filter: blur(8px); /* 增加模糊效果 */
+  -webkit-backdrop-filter: blur(8px); /* Safari 支持 */
   /* 添加边框，使内容区域更明显 */
-  border: 1px solid rgba(150, 180, 220, 0.15);
+  border: 1px solid rgba(150, 180, 220, 0.3);
   /* 添加宽度的最小值，确保内容区域有足够宽度 */
   min-width: 600px;
   /* 添加媒体查询，在小屏幕上自适应 */
@@ -47,11 +52,123 @@
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  background-color: rgba(230, 240, 250, 0.1);
-  box-shadow: -5px 0 15px rgba(100, 140, 190, 0.1), 5px 0 15px rgba(100, 140, 190, 0.1);
-  backdrop-filter: blur(1px);
-  border: 1px solid rgba(150, 180, 220, 0.15);
+  background-color: rgba(255, 255, 255, 0.4); /* 增加透明度 */
+  box-shadow: -5px 0 15px rgba(100, 140, 190, 0.15), 5px 0 15px rgba(100, 140, 190, 0.15);
+  backdrop-filter: blur(8px); /* 增加模糊效果 */
+  -webkit-backdrop-filter: blur(8px); /* Safari 支持 */
+  border: 1px solid rgba(150, 180, 220, 0.3);
   min-width: 280px;
+  transition: transform 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 添加半透明效果到主内容区域 */
+.main-content-container {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  border-radius: 10px;
+  border: 1px solid rgba(150, 180, 220, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px auto; /* 居中并添加上下边距 */
+  max-width: 90%; /* 限制最大宽度 */
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 1; /* 确保内容在背景之上 */
+}
+
+.main-content-container:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* 半透明效果应用到侧边栏 */
+.sidebar-container {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  border-radius: 10px;
+  border: 1px solid rgba(150, 180, 220, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 15px;
+  margin-top: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebar-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* 半透明效果应用到文章预览 */
+.post-preview {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(150, 180, 220, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-preview:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 分页导航半透明效果 */
+.pagination {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  padding: 10px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(150, 180, 220, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.pagination:hover {
+  transform: scale(1.03);
+}
+
+/* 半透明音乐播放器容器 */
+.music-player-container {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  border: 1px solid rgba(150, 180, 220, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 10px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.music-player-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* 音乐播放器标题 */
+.music-player-title {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px 8px 0 0;
+  padding: 10px 15px;
+  margin-bottom: 0;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(150, 180, 220, 0.2);
+  border-bottom: none;
+}
+
+/* 适配全屏背景的页面布局 */
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-attachment: fixed;
+  position: relative;
 }
 
 /* 媒体查询，在小屏幕上调整内容背景宽度 */
@@ -65,5 +182,17 @@
   
   #sidebar-background {
     display: none; /* 在小屏幕上隐藏侧边栏背景 */
+  }
+  
+  .main-content-container,
+  .sidebar-container,
+  .post-preview,
+  .pagination {
+    transform: none !important; /* 在移动设备上禁用放大效果，避免布局问题 */
+  }
+  
+  .main-content-container {
+    margin: 10px auto;
+    max-width: 95%;
   }
 }

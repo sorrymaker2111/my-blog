@@ -11,29 +11,117 @@ description: "「组一辈子乐队吧！」"
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
+<!-- 添加谷歌动漫风格字体 -->
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+
 <!-- 添加分页导航样式 -->
 <style>
+    /* 整体背景样式 */
+    body {
+        background-attachment: fixed;
+        position: relative;
+        min-height: 100vh;
+        background-image: url('https://i.loli.net/2021/09/14/5TB6poEjYqdJMQW.jpg');
+        background-size: cover;
+        background-position: center;
+        font-family: 'Noto Sans SC', sans-serif;
+    }
+    
+    /* 页面标题样式 */
+    .navbar-brand {
+        font-family: 'Mochiy Pop One', sans-serif;
+        color: #ff6b97 !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* 导航菜单样式 */
+    .navbar-custom {
+        background-color: rgba(255, 255, 255, 0.85);
+        border-bottom: 2px solid #ff6b97;
+    }
+    
+    .navbar-custom .nav li a {
+        color: #7986cb;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-custom .nav li a:hover {
+        color: #ff6b97;
+        transform: translateY(-2px);
+    }
+    
     /* 主页内容的容器 */
     .main-content-container {
-        background-color: #fff;
-        padding-top: 30px;
+        background-color: rgba(255, 255, 255, 0.85) !important;
+        border-radius: 15px;
+        border: 2px solid rgba(255, 182, 193, 0.6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 4px 15px rgba(255, 107, 151, 0.2);
+        padding: 25px;
         position: relative;
         z-index: 2;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-top: 20px;
+    }
+    
+    .main-content-container:hover {
+        transform: scale(1.01);
+        box-shadow: 0 8px 24px rgba(255, 107, 151, 0.3);
+    }
+    
+    /* 卡通风格装饰元素 */
+    .main-content-container::before {
+        content: "";
+        position: absolute;
+        top: -15px;
+        left: 20px;
+        width: 30px;
+        height: 30px;
+        background-color: #FF9CE3;
+        border-radius: 50%;
+        box-shadow: 0 0 0 5px rgba(255, 156, 227, 0.3);
+        z-index: -1;
+    }
+    
+    .main-content-container::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        right: 30px;
+        width: 20px;
+        height: 20px;
+        background-color: #A7C7E7;
+        border-radius: 50%;
+        box-shadow: 0 0 0 4px rgba(167, 199, 231, 0.3);
+        z-index: -1;
     }
     
     /* 为了让主页全屏效果更好的样式 */
     .home-spacer {
-        height: 0; /* 原来是100vh，改为0，去除空白 */
+        height: 0;
         width: 100%;
-        display: none; /* 隐藏占位符 */
+        display: none;
     }
     
+    /* 分页导航样式 */
     .pagination {
         display: flex;
         justify-content: center;
         margin: 30px 0;
-        padding: 0;
+        padding: 10px;
         list-style: none;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 182, 193, 0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .pagination:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(255, 107, 151, 0.2);
     }
     
     .pagination li {
@@ -44,192 +132,159 @@ description: "「组一辈子乐队吧！」"
     .pagination li span {
         display: block;
         padding: 8px 16px;
-        border: 1px solid #ddd;
-        color: #555;
+        border: 1px solid rgba(255, 182, 193, 0.5);
+        color: #6c5ce7;
         text-decoration: none;
-        border-radius: 4px;
+        border-radius: 8px;
         transition: all 0.3s ease;
+        background-color: rgba(255, 255, 255, 0.7);
     }
     
     .pagination li a:hover {
-        background-color: #f5f5f5;
+        background-color: #ffdbf0;
         color: #333;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(255, 107, 151, 0.2);
     }
     
     .pagination li.active span {
-        background-color: #337ab7;
+        background-color: #ff6b97;
         color: white;
-        border-color: #337ab7;
+        border-color: #ff6b97;
     }
     
     .pagination li.disabled span {
         color: #bbb;
         cursor: not-allowed;
+        background-color: rgba(255, 255, 255, 0.5);
     }
     
     .page-count {
         text-align: center;
         margin-bottom: 20px;
-        color: #777;
+        color: #6c5ce7;
         font-size: 14px;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        transition: transform 0.3s ease;
+        border: 1px solid rgba(255, 182, 193, 0.5);
     }
     
-    /* 音乐播放器样式 */
-    .music-player-container {
-        position: relative; 
-        width: 100%; 
-        max-width: 730px; 
-        margin: 0 auto;
+    .page-count:hover {
+        transform: scale(1.03);
     }
     
-    .music-player-wrapper {
-        position: relative; 
-        overflow: hidden;
+    /* 文章预览区域 */
+    .post-preview {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 182, 193, 0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
     }
     
-    .music-player-wrapper.pc {
-        padding-top: 56.25%; /* 16:9 比例 */
+    .post-preview:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 20px rgba(255, 107, 151, 0.2);
     }
     
-    .music-player-wrapper.mobile {
-        padding-top: 133.33%; /* 3:4 比例，更高的播放器适合移动端 */
+    /* 文章标题样式 */
+    .post-preview .post-title {
+        color: #6c5ce7;
+        font-weight: bold;
+        transition: color 0.3s ease;
     }
     
-    .music-player-iframe {
-        position: absolute; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100%;
+    .post-preview:hover .post-title {
+        color: #ff6b97;
+    }
+    
+    /* 文章副标题样式 */
+    .post-preview .post-subtitle {
+        color: #8a8a8a;
+    }
+    
+    /* 文章内容预览 */
+    .post-content-preview {
+        color: #666;
+        font-size: 15px;
+        margin: 10px 0;
+    }
+    
+    /* 文章预览装饰元素 */
+    .post-preview::before {
+        content: "✨";
+        position: absolute;
+        top: -5px;
+        right: 20px;
+        font-size: 20px;
+        color: #ff6b97;
+    }
+    
+    /* 文章元信息 */
+    .post-meta {
+        color: #a0a0a0;
+        font-size: 13px;
+        font-style: italic;
+        border-top: 1px dashed rgba(255, 182, 193, 0.5);
+        padding-top: 10px;
+        margin-top: 15px;
+    }
+    
+    /* 水平分割线样式 */
+    hr {
+        border: 0;
+        height: 1px;
+        background-image: linear-gradient(to right, rgba(255, 182, 193, 0), rgba(255, 182, 193, 0.75), rgba(255, 182, 193, 0));
+        margin: 30px 0;
+    }
+    
+    /* 移动设备适配 */
+    @media (max-width: 768px) {
+        .main-content-container,
+        .post-preview,
+        .pagination,
+        .page-count {
+            transform: none !important;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .main-content-container {
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .post-preview {
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+    }
+    
+    /* 动画效果 */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .floating-element {
+        animation: float 5s ease-in-out infinite;
     }
 </style>
 
-<!-- 主页内容容器 - 不再需要全屏占位符 -->
+<!-- 主页内容容器 -->
 <div class="main-content-container">
-    {% if paginator.page == 1 %}
-    <div class="music-player-title">
-        <h4>我喜欢的歌单</h4>
-    </div>
-
-    <div class="music-player-container">
-        <div id="musicPlayerWrapper" class="music-player-wrapper pc">
-            <iframe id="musicPlayerIframe" frameborder="no" border="0" marginwidth="0" marginheight="0" 
-                class="music-player-iframe" 
-                data-src="https://music.163.com/outchain/player?type=0&id=13052360489&auto=0&height=430"></iframe>
-        </div>
-    </div>
-
-    <script>
-        // 记录音乐播放器状态
-        let musicPlayerInitialized = false;
-        let musicPlayerSrc = "";
-        
-        // 检测设备类型
-        function isMobileDevice() {
-            return (window.innerWidth <= 768) || 
-                (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-        }
-        
-        // 调整播放器
-        function adjustMusicPlayer() {
-            var wrapper = document.getElementById('musicPlayerWrapper');
-            var iframe = document.getElementById('musicPlayerIframe');
-            
-            if (!iframe) return;
-            
-            const isMobile = isMobileDevice();
-            
-            // 更新播放器类名
-            if (wrapper) {
-                wrapper.className = isMobile ? 'music-player-wrapper mobile' : 'music-player-wrapper pc';
-            }
-            
-            // 确保播放器只加载一次
-            if (!musicPlayerInitialized) {
-                // 第一次加载时，设置正确的src
-                const dataSrc = iframe.getAttribute('data-src');
-                if (dataSrc) {
-                    // 根据设备类型设置正确的URL
-                    musicPlayerSrc = isMobile ? 
-                        dataSrc.replace('/outchain', '/m/outchain') : 
-                        dataSrc;
-                    
-                    // 设置src属性，开始加载播放器
-                    iframe.src = musicPlayerSrc;
-                    musicPlayerInitialized = true;
-                    
-                    // 存储到sessionStorage，便于返回时恢复
-                    try {
-                        sessionStorage.setItem('musicPlayerSrc', musicPlayerSrc);
-                        sessionStorage.setItem('musicPlayerInitialized', 'true');
-                    } catch (e) {
-                        console.warn('无法保存音乐播放器状态', e);
-                    }
-                }
-            } else {
-                // 已经初始化，仅在设备类型变化时更新src
-                const correctSrc = isMobile ? 
-                    iframe.src.replace('/outchain', '/m/outchain') : 
-                    iframe.src.replace('/m/outchain', '/outchain');
-                
-                // 如果需要切换URL但没有改变，避免重新加载
-                if (correctSrc !== iframe.src) {
-                    musicPlayerSrc = correctSrc;
-                    iframe.src = musicPlayerSrc;
-                    
-                    // 更新存储
-                    try {
-                        sessionStorage.setItem('musicPlayerSrc', musicPlayerSrc);
-                    } catch (e) {
-                        console.warn('无法更新音乐播放器状态', e);
-                    }
-                }
-            }
-        }
-        
-        // 恢复音乐播放器状态
-        function restoreMusicPlayer() {
-            try {
-                const savedInitialized = sessionStorage.getItem('musicPlayerInitialized');
-                const savedSrc = sessionStorage.getItem('musicPlayerSrc');
-                
-                if (savedInitialized === 'true' && savedSrc) {
-                    const iframe = document.getElementById('musicPlayerIframe');
-                    if (iframe) {
-                        // 恢复保存的状态
-                        musicPlayerInitialized = true;
-                        musicPlayerSrc = savedSrc;
-                        iframe.src = savedSrc;
-                        console.log('已恢复音乐播放器状态');
-                    }
-                } else {
-                    // 如果没有保存的状态，正常初始化
-                    adjustMusicPlayer();
-                }
-            } catch (e) {
-                console.warn('恢复音乐播放器状态失败', e);
-                // 出错时正常初始化
-                adjustMusicPlayer();
-            }
-        }
-        
-        // 页面加载时检查是否需要恢复状态
-        document.addEventListener('DOMContentLoaded', function() {
-            // 如果是从内部页面返回，尝试恢复播放器状态
-            const isReturningToHome = sessionStorage.getItem('homePageCacheApplied') === 'true';
-            if (isReturningToHome) {
-                restoreMusicPlayer();
-            } else {
-                // 首次访问，正常初始化
-                adjustMusicPlayer();
-            }
-        });
-        
-        // 窗口大小改变时调整
-        window.addEventListener('resize', adjustMusicPlayer);
-    </script>
-    {% endif %}
-
+    <!-- 萌系装饰元素 -->
+    <div style="position: absolute; top: -30px; right: 30px; font-size: 40px; transform: rotate(10deg);" class="floating-element">🌸</div>
+    <div style="position: absolute; bottom: -25px; left: 50px; font-size: 35px; transform: rotate(-5deg);" class="floating-element">✨</div>
+    
     <!-- 页面信息 -->
     <div class="page-count">
         {% if paginator.total_posts > 0 %}
@@ -542,19 +597,6 @@ description: "「组一辈子乐队吧！」"
         requestAnimationFrame(() => {
           currentPosts.innerHTML = cachedContent;
           
-          // 如果有音乐播放器，恢复而不是重新初始化
-          if (typeof restoreMusicPlayer === 'function') {
-            setTimeout(restoreMusicPlayer, 100);
-          } else if (typeof adjustMusicPlayer === 'function') {
-            setTimeout(adjustMusicPlayer, 100);
-          }
-          
-          // 从URL中移除刷新参数
-          if (hasRefreshParam() && window.history && window.history.replaceState) {
-            const cleanUrl = window.location.href.replace(/[?&]refresh=true/, '').replace(/[?&]t=\d+/, '');
-            window.history.replaceState({}, document.title, cleanUrl);
-          }
-          
           // 预加载其他页面，移动端主页时减少或禁用预加载
           if (!(pageCache.isMobile && isHomePage)) {
             setTimeout(preloadOtherPages, 1000);
@@ -594,19 +636,6 @@ description: "「组一辈子乐队吧！」"
           
           // 将新内容存储到缓存
           pageCache.store(currentUrl, newPosts.innerHTML);
-          
-          // 如果有音乐播放器，恢复而不是重新初始化
-          if (typeof restoreMusicPlayer === 'function') {
-            setTimeout(restoreMusicPlayer, 100);
-          } else if (typeof adjustMusicPlayer === 'function') {
-            setTimeout(adjustMusicPlayer, 100);
-          }
-          
-          // 移除URL中的刷新参数
-          if (hasRefreshParam() && window.history && window.history.replaceState) {
-            const cleanUrl = window.location.href.replace(/[?&]refresh=true/, '').replace(/[?&]t=\d+/, '');
-            window.history.replaceState({}, document.title, cleanUrl);
-          }
           
           // 预加载其他页面
           setTimeout(preloadOtherPages, 1000);
@@ -719,16 +748,6 @@ description: "「组一辈子乐队吧！」"
                   }, document.title, link.href);
                 }
                 
-                // 如果有音乐播放器，恢复状态
-                if (typeof restoreMusicPlayer === 'function') {
-                  setTimeout(restoreMusicPlayer, 100);
-                } else if (typeof adjustMusicPlayer === 'function') {
-                  setTimeout(adjustMusicPlayer, 100);
-                }
-                
-                // 滚动到顶部
-                window.scrollTo(0, 0);
-                
                 // 标记不需要刷新
                 sessionStorage.setItem('needsRefresh', 'false');
                 
@@ -806,13 +825,6 @@ description: "「组一辈子乐队吧！」"
         // 使用requestAnimationFrame优化DOM更新
         requestAnimationFrame(() => {
           contentContainer.innerHTML = cachedContent;
-          
-          // 如果有音乐播放器，恢复而不是重新初始化
-          if (typeof restoreMusicPlayer === 'function') {
-            setTimeout(restoreMusicPlayer, 100);
-          } else if (typeof adjustMusicPlayer === 'function') {
-            setTimeout(adjustMusicPlayer, 100);
-          }
         });
       }
     }
@@ -882,16 +894,6 @@ description: "「组一辈子乐队吧！」"
           // 使用requestAnimationFrame优化DOM更新
           requestAnimationFrame(() => {
             contentContainer.innerHTML = cacheContent;
-            
-            // 如果有音乐播放器，恢复而不是重新初始化
-            if (typeof restoreMusicPlayer === 'function') {
-              setTimeout(restoreMusicPlayer, 100);
-            } else if (typeof adjustMusicPlayer === 'function') {
-              setTimeout(adjustMusicPlayer, 100);
-            }
-            
-            // 滚动到顶部
-            window.scrollTo(0, 0);
           });
         }
       } else {
@@ -972,13 +974,6 @@ description: "「组一辈子乐队吧！」"
               // 应用缓存内容
               contentContainer.innerHTML = cachedContent;
               console.log('已应用本地缓存的主页内容');
-              
-              // 如果有音乐播放器，恢复而不是重新初始化
-              if (typeof restoreMusicPlayer === 'function') {
-                setTimeout(restoreMusicPlayer, 100);
-              } else if (typeof adjustMusicPlayer === 'function') {
-                setTimeout(adjustMusicPlayer, 100);
-              }
             }
           }
         } catch (e) {
@@ -1153,4 +1148,91 @@ description: "「组一辈子乐队吧！」"
       }
     }
   });
+</script>
+
+<!-- 添加二次元装饰元素的动画效果 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 创建浮动装饰元素
+  const createFloatingElements = () => {
+    const decorElements = ['🌟', '💖', '🎀', '✨', '🌸', '🐰', '🍭'];
+    const container = document.querySelector('.main-content-container');
+    
+    if (!container) return;
+    
+    // 创建5-8个随机装饰元素
+    const elemCount = Math.floor(Math.random() * 4) + 5;
+    
+    for (let i = 0; i < elemCount; i++) {
+      const elem = document.createElement('div');
+      const randomEmoji = decorElements[Math.floor(Math.random() * decorElements.length)];
+      elem.textContent = randomEmoji;
+      elem.style.position = 'absolute';
+      elem.style.fontSize = (Math.random() * 15 + 15) + 'px';
+      elem.style.opacity = (Math.random() * 0.4 + 0.6).toString();
+      elem.style.color = '#' + Math.floor(Math.random()*16777215).toString(16);
+      
+      // 随机位置（容器外围）
+      const isTop = Math.random() > 0.5;
+      const isLeft = Math.random() > 0.5;
+      
+      if (isTop) {
+        elem.style.top = (Math.random() * 40 - 50) + 'px';
+      } else {
+        elem.style.bottom = (Math.random() * 40 - 50) + 'px';
+      }
+      
+      if (isLeft) {
+        elem.style.left = (Math.random() * (container.offsetWidth - 30)) + 'px';
+      } else {
+        elem.style.right = (Math.random() * (container.offsetWidth - 30)) + 'px';
+      }
+      
+      // 旋转角度
+      elem.style.transform = `rotate(${Math.random() * 40 - 20}deg)`;
+      
+      // 添加浮动动画，但每个动画时长和延迟略有差异
+      elem.style.animation = `float ${Math.random() * 2 + 4}s ease-in-out ${Math.random() * 2}s infinite`;
+      
+      // 添加到容器
+      container.appendChild(elem);
+    }
+  };
+  
+  // 在非移动设备才添加装饰元素（避免移动设备性能问题）
+  if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    createFloatingElements();
+  }
+  
+  // 鼠标经过文章时添加闪光效果
+  const posts = document.querySelectorAll('.post-preview');
+  posts.forEach(post => {
+    post.addEventListener('mouseenter', function() {
+      const sparkle = document.createElement('div');
+      sparkle.innerHTML = '✨';
+      sparkle.style.position = 'absolute';
+      sparkle.style.top = '-10px';
+      sparkle.style.left = '20px';
+      sparkle.style.fontSize = '20px';
+      sparkle.style.opacity = '0';
+      sparkle.style.transition = 'all 0.5s ease';
+      
+      post.appendChild(sparkle);
+      
+      // 淡入效果
+      setTimeout(() => {
+        sparkle.style.opacity = '1';
+        sparkle.style.transform = 'translateY(-10px) scale(1.2)';
+      }, 10);
+      
+      // 淡出效果
+      setTimeout(() => {
+        sparkle.style.opacity = '0';
+        setTimeout(() => {
+          sparkle.remove();
+        }, 500);
+      }, 1000);
+    });
+  });
+});
 </script>

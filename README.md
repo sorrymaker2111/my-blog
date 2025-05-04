@@ -1,53 +1,62 @@
-# [Hux Blog](https://huangxuan.me)
+# [sorrymaker 的博客](https://sorrymaker.top)
 
-> I never expected this to become popular.
+> 「他单纯只想玩 galgame」 - 一个喜欢玩游戏的 Java 开发者的个人博客
 
-![](http://huangxuan.me/img/blog-desktop.jpg)
+![](img/index_bg.png)
 
-## [User Manual 👉](_doc/Manual.md)
+## 关于本站
 
-### Getting Started
+这是一个基于 Jekyll 的个人博客网站，主要记录：
 
-1. You will need [Ruby](https://www.ruby-lang.org/en/) and [Bundler](https://bundler.io/) to use [Jekyll](https://jekyllrb.com/). Following [Using Jekyll with Bundler](https://jekyllrb.com/tutorials/using-jekyll-with-bundler/) to fullfill the enviromental requirement.
+- Java 编程与开发技术分享
+- SpringBoot 框架学习笔记
+- Web 前后端开发心得
+- Galgame 游戏体验与推荐
+- 日常生活随想与记录
 
-2. Installed dependencies in the `Gemfile`:
+本站使用[Hux Blog](https://github.com/Huxpro/huxpro.github.io)主题修改而来，根据个人喜好进行了定制，添加了动漫风格元素，并优化了移动端显示效果。
+
+## Getting Started
+
+1. 你需要安装[Ruby](https://www.ruby-lang.org/en/)和[Bundler](https://bundler.io/)来使用[Jekyll](https://jekyllrb.com/)。按照[Using Jekyll with Bundler](https://jekyllrb.com/tutorials/using-jekyll-with-bundler/)指南完成环境配置。
+
+2. 安装`Gemfile`中的依赖包：
 
 ```sh
 $ bundle install
 ```
 
-3. Serve the website (`localhost:4000` by default):
+3. 启动网站（默认地址：`localhost:4000`）：
 
 ```sh
-$ bundle exec jekyll serve  # alternatively, npm start
+$ bundle exec jekyll serve  # 或者使用 npm start
 ```
 
-### Development (Build From Source)
+## Development (Build From Source)
 
-To modify the theme, you will need [Grunt](https://gruntjs.com/). There are numbers of tasks you can find in the `Gruntfile.js`, includes minifing JavaScript, compiling `.less` to `.css`, adding banners to keep the Apache 2.0 license intact, watching for changes, etc.
+要修改主题，你需要安装[Grunt](https://gruntjs.com/)。在`Gruntfile.js`中可以找到多个任务，包括压缩 JavaScript、将`.less`编译为`.css`、添加保持 Apache 2.0 许可完整的标语、监视变更等。
 
-Yes, they were inherited and are extremely old-fashioned. There is no modularization and transpilation, etc.
+是的，这些都是继承而来的，非常老式。没有模块化和转译等功能。
 
-Critical Jekyll-related code are located in `_include/` and `_layouts/`. Most of them are [Liquid](https://github.com/Shopify/liquid/wiki) templates.
+Jekyll 相关的关键代码位于`_include/`和`_layouts/`目录中。大多数是[Liquid](https://github.com/Shopify/liquid/wiki)模板。
 
-This theme uses the default code syntax highlighter of jekyll, [Rouge](http://rouge.jneen.net/), which is compatible with Pygments theme so just pick any pygments theme css (e.g. from [here](http://jwarby.github.io/jekyll-pygments-themes/languages/javascript.html) and replace the content of `highlight.less`.
+此主题使用 Jekyll 的默认代码语法高亮器[Rouge](http://rouge.jneen.net/)，它与 Pygments 主题兼容，所以只需选择任何 pygments 主题 css（例如从[这里](http://jwarby.github.io/jekyll-pygments-themes/languages/javascript.html)），并替换`highlight.less`的内容即可。
 
-### Interesting to know more? Checkout the [full user manual](_doc/Manual.md)!
+## 特色功能
 
-## Other Resources
+- 响应式设计，适配各种设备
+- 多语言支持（中文/英文）
+- PWA 支持，可离线访问
+- 文章分类与标签系统
+- 集成评论系统
+- 自定义社交媒体链接（B 站、抖音、Github 等）
+- 丰富的自定义设置选项
 
-Ports
+## 联系我
 
-- [**Hexo**](https://github.com/Kaijun/hexo-theme-huxblog) by @kaijun
-- [**React-SSR**](https://github.com/LucasIcarus/huxpro.github.io/tree/ssr) by @LucasIcarus
-
-[Starter/Boilerplate](https://github.com/huxpro/huxblog-boilerplate)
-
-- Out of date. Helps wanted for updating it on par with the main repo
-
-Translation
-
-- [🇨🇳 中文文档（有点过时）](https://github.com/Huxpro/huxpro.github.io/blob/master/_doc/README.zh.md)
+- B 站：[sorrymaker2111](https://space.bilibili.com/392759115)
+- Github：[sorrymaker2111](https://github.com/sorrymaker2111)
+- 抖音：[sorrymaker](https://www.douyin.com/user/MS4wLjABAAAAvRciV_I85LBc2bbp1Vqxp5v2bVOgr8NxXy-cMzNzjeg)
 
 ## License
 

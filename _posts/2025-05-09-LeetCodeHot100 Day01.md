@@ -4,7 +4,7 @@ title: "LeetCodeHot100 Day01"
 subtitle: "哈希，启动！"
 date: 2025-05-09 19:00:00
 author: "sorrymaker"
-header-img: "/img/image-20250509190814965.png"
+header-img: "img/image-20250509190814965.png"
 catalog: true
 tags:
   - java

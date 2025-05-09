@@ -1,0 +1,222 @@
+/* 自定义CSS以解决代码块在移动端的显示问题 */
+
+/* 改善代码块样式 - 更强力的边框和表格处理 */
+.highlighter-rouge .highlight {
+  margin-bottom: 20px !important;
+  border-radius: 5px !important;
+  overflow: auto !important;
+  border: none !important;
+  background-color: #f8f8f8 !important;
+}
+
+/* 完全移除代码块相关的所有表格边框 */
+.highlighter-rouge .highlight table,
+.highlighter-rouge .highlight tr,
+.highlighter-rouge .highlight td,
+.highlighter-rouge .highlight th,
+.highlighter-rouge .highlight tbody,
+.highlighter-rouge .highlight thead {
+  border: none !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* 对代码块中的表格进行更彻底的样式优化 */
+.highlighter-rouge .highlight .table {
+  margin: 0 !important;
+  border: none !important;
+  border-collapse: collapse !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+  background: transparent !important;
+}
+
+/* 明确移除代码块表格的所有边框 */
+.highlighter-rouge .highlight table > tbody > tr,
+.highlighter-rouge .highlight table > tbody > tr > td {
+  border: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  vertical-align: top !important;
+  background: transparent !important;
+}
+
+/* 完全隐藏行号区域 */
+.highlighter-rouge .highlight td.rouge-gutter {
+  display: none !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* 确保代码内容区域占满宽度并移除所有边框 */
+.highlighter-rouge .highlight td.rouge-code {
+  width: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* 移除行号列表样式 */
+.highlighter-rouge .highlight .lineno {
+  display: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* 确保pre元素没有边框 */
+.highlighter-rouge .highlight pre {
+  border: none !important;
+  margin: 0 !important;
+  padding: 15px !important;
+  background: transparent !important;
+}
+
+/* 特别针对移动端的优化 */
+@media (max-width: 767px) {
+  /* 适配移动端的代码块样式 */
+  .highlighter-rouge .highlight {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  /* 改善代码块内容的展示 */
+  .highlighter-rouge .highlight table > tbody > tr > td > pre {
+    padding: 15px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    white-space: pre !important;
+    border: none !important;
+  }
+  
+  /* 确保代码块中的代码不会因为单词换行而被截断 */
+  .highlighter-rouge .highlight pre code {
+    white-space: pre !important;
+    word-wrap: normal !important;
+    overflow-wrap: normal !important;
+    border: none !important;
+  }
+  
+  /* 最后的保障 - 如果仍有垂直线，尝试用这种方法隐藏 */
+  .highlighter-rouge .highlight::before,
+  .highlighter-rouge .highlight::after {
+    display: none !important;
+  }
+  
+  /* 移除表格之间的任何空间 */
+  .highlighter-rouge .highlight table {
+    border-spacing: 0 !important;
+    border-collapse: collapse !important;
+  }
+}
+
+/* 修复普通代码块的样式 */
+pre {
+  background-color: #f8f8f8 !important;
+  border-radius: 4px !important;
+  padding: 15px !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  border: none !important;
+}
+
+pre code {
+  white-space: pre !important;
+  word-wrap: normal !important;
+  overflow-wrap: normal !important;
+  border: none !important;
+}
+
+/* 针对所有可能渲染代码块的元素，确保没有边框 */
+code, pre, .highlight, .highlighter-rouge, .rouge-table, .rouge-code, .rouge-gutter {
+  border: none !important;
+}
+
+/* 针对移动端优化代码滚动体验 */
+@media (max-width: 767px) {
+  .post-container pre {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+    padding: 15px !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+  
+  /* 确保代码容器中的所有元素都没有边框 */
+  .post-container pre *,
+  .post-container .highlighter-rouge *,
+  .post-container .highlight * {
+    border: none !important;
+  }
+}
+
+/* 特别针对rouge代码块渲染表格的滑动线问题 */
+.highlight table.rouge-table {
+  display: block !important; /* 将表格改为块级元素 */
+  border: none !important;
+  border-collapse: collapse !important;
+  width: 100% !important;
+}
+
+.highlight table.rouge-table tr {
+  display: flex !important; /* 使用flex布局 */
+  border: none !important;
+}
+
+.highlight table.rouge-table td.rouge-gutter {
+  display: none !important; /* 完全隐藏行号列 */
+  width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+.highlight table.rouge-table td.rouge-code {
+  flex: 1 !important; /* 代码区域占据所有空间 */
+  border: none !important;
+  padding: 0 !important;
+}
+
+/* 确保代码区域的滚动正常 */
+.highlight pre {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* 最终保障 - 强制移除所有表格相关的边框和背景 */
+.highlight table,
+.highlight tr,
+.highlight td,
+.highlight tbody,
+.highlight thead,
+.highlight th {
+  border: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  background: transparent !important;
+}
+
+/* 修复垂直分隔线的直接攻击 */
+.highlight td.rouge-gutter::after,
+.highlight td.rouge-gutter::before,
+.highlight td.rouge-code::before {
+  display: none !important;
+  content: none !important;
+  border: none !important;
+  background: none !important;
+} 

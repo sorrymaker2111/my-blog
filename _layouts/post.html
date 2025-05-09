@@ -159,3 +159,56 @@ layout: default
     }
 </style>
 {% endif %}
+
+<!-- 内联样式 - 修复移动端代码块垂直线问题 -->
+<style>
+    /* 紧急修复代码块在移动设备上的垂直线问题 */
+    @media (max-width: 767px) {
+        .highlighter-rouge .highlight {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        
+        /* 强制表格布局 */
+        .highlighter-rouge .highlight table.rouge-table {
+            display: block !important;
+            border: none !important;
+            border-collapse: collapse !important;
+            width: 100% !important;
+        }
+        
+        /* 移除gutter列 */
+        .highlighter-rouge .highlight td.rouge-gutter {
+            display: none !important;
+            width: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+        
+        /* 确保代码列占满宽度 */
+        .highlighter-rouge .highlight td.rouge-code {
+            display: block !important;
+            width: 100% !important;
+            border: none !important;
+        }
+        
+        /* 移除所有可能的边框 */
+        .highlighter-rouge .highlight table,
+        .highlighter-rouge .highlight tr,
+        .highlighter-rouge .highlight td,
+        .highlighter-rouge .highlight th,
+        .highlighter-rouge .highlight thead,
+        .highlighter-rouge .highlight tbody,
+        .highlighter-rouge .highlight pre,
+        .highlighter-rouge .highlight code {
+            border: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-top: none !important;
+            border-bottom: none !important;
+        }
+    }
+</style>
+
+<!-- 代码块修复脚本 -->
+<script src="{{ site.baseurl }}/js/fix-code-blocks.js"></script>
